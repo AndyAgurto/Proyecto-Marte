@@ -78,7 +78,7 @@ MARTE-Installer/
 ## 🚀 Instrucciones para el Usuario Final
 
 ### Instalación
-1. Descargar `MARTE-Installer-v1.3.0-FINAL.zip`
+1. Descargar `MARTE-Installer-v1.3.0.zip`
 2. Extraer en cualquier carpeta
 3. **Click derecho** en `INSTALAR-MARTE.bat`
 4. **Seleccionar** "Ejecutar como administrador"
@@ -99,7 +99,7 @@ MARTE-Installer/
 ### Pasos para Subir
 1. Ir a la URL del release
 2. Click en "Edit" (Editar)
-3. Subir `MARTE-Installer-v1.3.0-FINAL.zip`
+3. Subir `MARTE-Installer-v1.3.0.zip`
 4. Actualizar notas de release:
 
 ```markdown
