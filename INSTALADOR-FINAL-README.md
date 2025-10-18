@@ -2,7 +2,7 @@
 
 ## 📦 Archivo Listo para Distribución
 
-**Archivo:** `MARTE-Installer-v1.3.0-FINAL.zip`  
+**Archivo:** `MARTE-Installer-v1.3.0.zip`  
 **Tamaño:** 52.41 MB  
 **Fecha:** 18 de octubre 2025  
 **Estado:** ✅ LISTO PARA PRODUCCIÓN
