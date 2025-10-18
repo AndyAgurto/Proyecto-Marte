@@ -1,0 +1,44 @@
+MARTE - Sistema de Gestión de Asistencias
+==========================================
+
+Versión: 1.3.0
+Nombre en Código: LocalDB Revolution
+Fecha de Lanzamiento: 18 de Octubre, 2025
+Estado: Stable Release
+
+Desarrollador: Andy Agurto Urcia
+Organización: AU Developers (MVP)
+Cliente: Nueva Acrópolis
+
+Framework: .NET 9.0
+Base de Datos: SQL Server LocalDB 2022
+Arquitectura: Clean Architecture (4 capas)
+
+Licencia: MIT License
+Copyright: © 2025 Andy Agurto - Todos los derechos reservados
+
+Repositorio: https://github.com/AndyAgurto/Proyecto-Marte
+Soporte: druagurto@hotmail.com
+
+Características Principales v1.3.0:
+- ✅ Instalación automática con scripts PowerShell
+- ✅ SQL Server LocalDB embebido (Zero Configuration)
+- ✅ Primera ejecución con setup automático
+- ✅ Ventana "Acerca de" con información del sistema
+- ✅ Documentación completa actualizada
+- ✅ Scripts de desinstalación con backup
+
+Requisitos del Sistema:
+- Sistema Operativo: Windows 10/11 (64-bit)
+- RAM: 2 GB mínimo (4 GB recomendado)
+- Espacio en Disco: 500 MB
+- Resolución: 1024x768 mínimo
+
+Dependencias (instaladas automáticamente):
+- .NET 9.0 Desktop Runtime
+- SQL Server LocalDB 2022
+
+Para más información, consulte:
+- README-INSTALACION.md (guía de instalación)
+- README-COMPLETO.md (documentación técnica)
+- RELEASE-NOTES-v1.3.0.md (notas de la versión)
