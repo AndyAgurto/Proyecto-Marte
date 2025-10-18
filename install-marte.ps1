@@ -250,11 +250,6 @@ Write-Host "  - Haga doble clic en el icono del escritorio" -ForegroundColor Whi
 Write-Host "  - O busquelo en el menu inicio" -ForegroundColor White
 Write-Host ""
 Write-Host "----------------------------------------" -ForegroundColor DarkGray
+Write-Host ""
 
 Read-Host "Presione ENTER para finalizar"
-
-# Opcional: Ejecutar MARTE automaticamente
-$runNow = Read-Host "Desea ejecutar MARTE ahora? (S/N)"
-if ($runNow -eq "S" -or $runNow -eq "s") {
-    Start-Process "$InstallPath\Marte.WPF.exe"
-}
