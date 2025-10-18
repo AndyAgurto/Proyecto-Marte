@@ -798,7 +798,6 @@ public class Usuario
 
 El sistema utiliza **SQL Server** con **Entity Framework Core 9.0.10** para la gestión de datos. La base de datos está diseñada siguiendo principios de normalización y Domain-Driven Design.
 
-```mermaid
 erDiagram
     Usuario {
         Guid Id PK
