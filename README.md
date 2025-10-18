@@ -96,7 +96,7 @@ MARTE/
 **Requisitos**: Windows 10/11 (64-bit) • 500 MB espacio • Internet (instalación inicial)
 
 1. Descargar `MARTE-Installer-v1.3.0.zip` desde [Releases](https://github.com/AndyAgurto/Proyecto-Marte/releases)
-2. Ejecutar `install-marte.ps1` como Administrador
+2. Ejecutar `INSTALAR-MARTE.bat` como Administrador
 3. Iniciar MARTE (acceso directo en Desktop)
 4. Login por defecto: `druagurto` / `@Druagurto00`
 
