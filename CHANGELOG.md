@@ -13,8 +13,8 @@ y este proyecto adhiere a [Semantic Versioning](https://semver.org/lang/es/).
 
 ### Agregado
 - **Instalación Automática Completa**
-  - Script `install-marte.ps1` con detección de dependencias (versión FINAL sin emojis)
-  - Script `uninstall-marte.ps1` con opción de backup (versión FINAL sin emojis)
+  - Script `install-marte.ps1` con detección de dependencias (versión FINAL, formato ASCII)
+  - Script `uninstall-marte.ps1` con opción de backup (versión FINAL, formato ASCII)
   - Script `crear-paquete-instalador.ps1` para empaquetado
   - Wrappers BAT (`INSTALAR-MARTE.bat`, `DESINSTALAR-MARTE.bat`) con ExecutionPolicy Bypass
   - Instalación automática de .NET 9 Runtime
@@ -63,7 +63,7 @@ y este proyecto adhiere a [Semantic Versioning](https://semver.org/lang/es/).
 - Documentación más organizada y accesible
 
 ### Corregido
-- **Errores de parsing en PowerShell**: Emojis Unicode causaban "Falta la cadena en el terminador"
+- **Errores de parsing en PowerShell**: Caracteres especiales causaban "Falta la cadena en el terminador"
   - Solución: Formato profesional ASCII con prefijos `[OK]`, `[ERROR]`, `[AVISO]`
 - **Error "No se encontraron archivos de aplicacion"**: Working directory incorrecto
   - Solución: Agregado `Set-Location -Path $PSScriptRoot` en scripts

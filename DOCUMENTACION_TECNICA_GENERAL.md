@@ -2066,7 +2066,7 @@ RESUMEN GENERAL
 
 **Características:**
 - ✅ Formato apaisado (Landscape) para mayor espacio horizontal
-- ✅ Emoji 📅 para destacar cada fecha
+- ✅ Icono para destacar cada fecha
 - ✅ Contador de asistentes en título de cada día
 - ✅ Colores semánticos: Verde para "Hasta Cierre", Naranja para "Salida Manual"
 - ✅ Font size 8 para caber más información
@@ -2103,9 +2103,9 @@ RESUMEN POR CATEGORÍA
 └───────────┴───────┴───────────────────┴──────────────┘
 ```
 
-**En PDF**, cada categoría/grupo tiene su propia sección con emoji 📋:
+**En PDF**, cada categoría/grupo tiene su propia sección destacada:
 ```
-📋 Miembros - Grupo G1 (150 asistencias)
+[Icono] Miembros - Grupo G1 (150 asistencias)
 [Tabla con todos los asistentes del grupo]
 
 📋 Miembros - Grupo G2 (145 asistencias)

@@ -103,11 +103,11 @@ MARTE-Installer/
 4. Actualizar notas de release:
 
 ```markdown
-## 🔧 Corrección Importante
+## Corrección Importante
 
 Esta versión del instalador incluye correcciones críticas:
 
-- **Compatibilidad PowerShell:** Eliminados caracteres emoji que causaban errores de parsing
+- **Compatibilidad PowerShell:** Eliminados caracteres especiales que causaban errores de parsing
 - **Rutas Automáticas:** Scripts detectan automáticamente su ubicación
 - **Instalación Limpia:** Removida ejecución automática que causaba errores
 

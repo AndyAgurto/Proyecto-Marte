@@ -13,10 +13,10 @@ La versión 1.3.0 de MARTE representa un avance significativo en la facilidad de
 ### 🎯 Objetivo Principal
 Transformar MARTE en una aplicación **"Zero Configuration"** que cualquier usuario final pueda instalar y usar sin conocimientos técnicos previos.
 
-### 🔧 Correcciones Críticas (v1.3.0-FINAL)
+### Correcciones Críticas (v1.3.0-FINAL)
 Durante el proceso de empaquetado se identificaron y corrigieron **3 problemas críticos** del instalador:
 
-1. **Emojis causaban errores de parsing**: Los caracteres Unicode (✅❌⚠️💾) provocaban "Falta la cadena en el terminador"
+1. **Caracteres especiales causaban errores de parsing**: Caracteres no ASCII provocaban "Falta la cadena en el terminador"
    - **Solución**: Formato profesional ASCII con prefijos `[OK]`, `[ERROR]`, `[AVISO]`
 
 2. **Error "No se encontraron archivos de aplicacion"**: El working directory no se establecía correctamente
@@ -39,7 +39,7 @@ Durante el proceso de empaquetado se identificaron y corrigieron **3 problemas c
   - ✅ Creación automática de instancia LocalDB `mssqllocaldb`
   - ✅ Copia de archivos a `C:\Program Files\MARTE\`
   - ✅ Creación de accesos directos (Desktop y Menú Inicio)
-  - ✅ **Formato profesional ASCII**: `[OK]`, `[ERROR]`, `[AVISO]` (sin emojis)
+  - ✅ **Formato profesional ASCII**: `[OK]`, `[ERROR]`, `[AVISO]`
   - ✅ **Detección automática de ruta**: `Set-Location -Path $PSScriptRoot`
   - ✅ **Sin auto-ejecución**: Instalación limpia sin prompts confusos
 
@@ -49,7 +49,7 @@ Durante el proceso de empaquetado se identificaron y corrigieron **3 problemas c
   - ✅ Eliminación selectiva de componentes
   - ✅ Guía para desinstalar LocalDB (opcional)
   - ✅ Verificación post-desinstalación
-  - ✅ **Formato profesional ASCII** (sin emojis)
+  - ✅ **Formato profesional ASCII**
 
 - **`crear-paquete-instalador.ps1`** - Empaquetador para distribución
   - ✅ Compilación automática en modo Release
@@ -158,7 +158,7 @@ await DatabaseSeeder.SeedAsync(_serviceProvider);
 #### Documentos Nuevos/Actualizados
 1. **`INSTALADOR-FINAL-README.md`** ⭐ NUEVO
    - Guía completa del instalador final
-   - Correcciones aplicadas (emojis, rutas, auto-ejecución)
+   - Correcciones aplicadas (caracteres especiales, rutas, auto-ejecución)
    - Contenido del paquete
    - Instrucciones de instalación
    - Historial de commits del proceso
@@ -193,7 +193,7 @@ await DatabaseSeeder.SeedAsync(_serviceProvider);
 - ✅ **#N/A**: Proceso de instalación complejo para usuarios finales
 
 ### Correcciones Críticas del Instalador
-- ✅ **Emojis causaban errores de parsing en PowerShell**: Reemplazados por formato ASCII profesional
+- ✅ **Caracteres especiales causaban errores de parsing**: Reemplazados por formato ASCII profesional
 - ✅ **Error "No se encontraron archivos de aplicacion"**: Agregado `Set-Location -Path $PSScriptRoot`
 - ✅ **Auto-ejecución fallaba sin admin**: Eliminada opción de ejecutar MARTE después de instalación
 - ✅ **Políticas de ejecución bloqueaban scripts**: Agregados wrappers BAT con `-ExecutionPolicy Bypass`
@@ -226,7 +226,7 @@ f536da7 - docs: Eliminar archivos de documentacion redundantes e innecesarios
 a31e1d2 - docs: Agregar documentacion completa del instalador final v1.3.0
 0570c55 - Fix: Eliminar opcion de ejecutar MARTE automaticamente despues de instalacion
 aa346e9 - Fix: Agregar Set-Location para garantizar rutas relativas correctas
-ff9728d - Fix: Eliminar emojis de scripts de instalacion para compatibilidad PowerShell
+ff9728d - Fix: Reemplazar caracteres especiales por formato ASCII en scripts de instalacion
 2905e09 - Agregar archivos .bat para instalación fácil sin problemas de políticas
 85fdf8e - Reemplazar script de paquete: crear-paquete-instalador.ps1 automatizado
 cd3c285 - docs: agregar guía para crear release en GitHub
@@ -309,8 +309,8 @@ MARTE-Installer-v1.3.0-FINAL/
 │
 ├── INSTALAR-MARTE.bat                  # Wrapper de instalación
 ├── DESINSTALAR-MARTE.bat               # Wrapper de desinstalación
-├── install-marte.ps1                   # Instalador automático (sin emojis, ASCII)
-├── uninstall-marte.ps1                 # Desinstalador con backup (sin emojis)
+├── install-marte.ps1                   # Instalador automático (formato ASCII)
+├── uninstall-marte.ps1                 # Desinstalador con backup (formato ASCII)
 ├── RELEASE-NOTES-v1.3.0.md             # Notas del release
 └── VERSION.txt                         # Metadatos de versión
 ```
