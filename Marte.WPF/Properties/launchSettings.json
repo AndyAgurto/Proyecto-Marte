@@ -1,0 +1,17 @@
+{
+  "profiles": {
+    "Marte.WPF": {
+      "commandName": "Project",
+      "hotReloadEnabled": true,
+      "hotReloadProfile": "default"
+    },
+    "Marte.WPF (Hot Reload)": {
+      "commandName": "Project",
+      "hotReloadEnabled": true,
+      "hotReloadProfile": "blazorwasm",
+      "environmentVariables": {
+        "DOTNET_MODIFIABLE_ASSEMBLIES": "debug"
+      }
+    }
+  }
+}

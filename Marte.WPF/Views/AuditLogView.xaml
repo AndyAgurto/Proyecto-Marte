@@ -1,0 +1,356 @@
+<Window x:Class="Marte.WPF.Views.AuditLogView"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="Bitácora de Auditoría - MARTE" 
+        Height="750" 
+        Width="1400"
+        WindowStartupLocation="CenterScreen"
+        Background="#1E1E1E"
+        Icon="/Images/Marte-Ico.ico">
+
+    <Window.Resources>
+        <!-- Fuente Cinzel -->
+        <FontFamily x:Key="CinzelFont">Times New Roman</FontFamily>
+
+        <!-- Estilos de Texto -->
+        <Style x:Key="TitleStyle" TargetType="TextBlock">
+            <Setter Property="FontFamily" Value="{StaticResource CinzelFont}"/>
+            <Setter Property="FontSize" Value="28"/>
+            <Setter Property="FontWeight" Value="Bold"/>
+            <Setter Property="Foreground" Value="#8B0000"/>
+            <Setter Property="HorizontalAlignment" Value="Center"/>
+            <Setter Property="Margin" Value="0,10,0,20"/>
+            <Setter Property="Effect">
+                <Setter.Value>
+                    <DropShadowEffect Color="#8B0000" BlurRadius="10" ShadowDepth="0" Opacity="0.7"/>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <Style x:Key="SubtitleStyle" TargetType="TextBlock">
+            <Setter Property="FontFamily" Value="{StaticResource CinzelFont}"/>
+            <Setter Property="FontSize" Value="16"/>
+            <Setter Property="FontWeight" Value="SemiBold"/>
+            <Setter Property="Foreground" Value="#8B0000"/>
+            <Setter Property="Margin" Value="0,0,0,10"/>
+        </Style>
+
+        <Style x:Key="LabelStyle" TargetType="TextBlock">
+            <Setter Property="FontFamily" Value="{StaticResource CinzelFont}"/>
+            <Setter Property="FontSize" Value="12"/>
+            <Setter Property="Foreground" Value="#B8B8B8"/>
+            <Setter Property="VerticalAlignment" Value="Center"/>
+            <Setter Property="Margin" Value="0,0,10,0"/>
+        </Style>
+
+        <!-- Estilo de TextBox -->
+        <Style x:Key="InputTextBox" TargetType="TextBox">
+            <Setter Property="Background" Value="#2D2D30"/>
+            <Setter Property="Foreground" Value="#F1F1F1"/>
+            <Setter Property="BorderBrush" Value="#3F3F46"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="Padding" Value="8,6"/>
+            <Setter Property="FontSize" Value="12"/>
+            <Setter Property="VerticalContentAlignment" Value="Center"/>
+            <Setter Property="Height" Value="32"/>
+        </Style>
+
+        <!-- Estilo de DatePicker -->
+        <Style x:Key="InputDatePicker" TargetType="DatePicker">
+            <Setter Property="Background" Value="#2D2D30"/>
+            <Setter Property="Foreground" Value="#F1F1F1"/>
+            <Setter Property="BorderBrush" Value="#3F3F46"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="Padding" Value="8,6"/>
+            <Setter Property="FontSize" Value="12"/>
+            <Setter Property="Height" Value="32"/>
+        </Style>
+
+        <!-- Estilo de Botones -->
+        <Style x:Key="ActionButton" TargetType="Button">
+            <Setter Property="Background" Value="#8B0000"/>
+            <Setter Property="Foreground" Value="#FFFFFF"/>
+            <Setter Property="FontFamily" Value="{StaticResource CinzelFont}"/>
+            <Setter Property="FontWeight" Value="Bold"/>
+            <Setter Property="FontSize" Value="12"/>
+            <Setter Property="Padding" Value="20,8"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="Height" Value="32"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border Background="{TemplateBinding Background}" 
+                                CornerRadius="3"
+                                Padding="{TemplateBinding Padding}">
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        </Border>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+            <Style.Triggers>
+                <Trigger Property="IsMouseOver" Value="True">
+                    <Setter Property="Background" Value="#A52A2A"/>
+                </Trigger>
+                <Trigger Property="IsEnabled" Value="False">
+                    <Setter Property="Background" Value="#3F3F46"/>
+                    <Setter Property="Foreground" Value="#6D6D6D"/>
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+
+        <Style x:Key="SecondaryButton" TargetType="Button" BasedOn="{StaticResource ActionButton}">
+            <Setter Property="Background" Value="#3F3F46"/>
+            <Setter Property="Foreground" Value="#F1F1F1"/>
+            <Style.Triggers>
+                <Trigger Property="IsMouseOver" Value="True">
+                    <Setter Property="Background" Value="#505056"/>
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+
+        <!-- Estilo de DataGrid -->
+        <Style x:Key="AuditDataGrid" TargetType="DataGrid">
+            <Setter Property="Background" Value="#252526"/>
+            <Setter Property="Foreground" Value="#F1F1F1"/>
+            <Setter Property="BorderBrush" Value="#3F3F46"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="GridLinesVisibility" Value="None"/>
+            <Setter Property="AutoGenerateColumns" Value="False"/>
+            <Setter Property="CanUserAddRows" Value="False"/>
+            <Setter Property="CanUserDeleteRows" Value="False"/>
+            <Setter Property="IsReadOnly" Value="True"/>
+            <Setter Property="SelectionMode" Value="Single"/>
+            <Setter Property="AlternatingRowBackground" Value="#2D2D30"/>
+            <Setter Property="RowBackground" Value="#252526"/>
+            <Setter Property="HeadersVisibility" Value="Column"/>
+            <Setter Property="VerticalScrollBarVisibility" Value="Auto"/>
+            <Setter Property="HorizontalScrollBarVisibility" Value="Auto"/>
+        </Style>
+
+        <Style TargetType="DataGridColumnHeader">
+            <Setter Property="Background" Value="#2D2D30"/>
+            <Setter Property="Foreground" Value="#8B0000"/>
+            <Setter Property="FontFamily" Value="{StaticResource CinzelFont}"/>
+            <Setter Property="FontWeight" Value="Bold"/>
+            <Setter Property="FontSize" Value="12"/>
+            <Setter Property="Padding" Value="10,8"/>
+            <Setter Property="BorderBrush" Value="#3F3F46"/>
+            <Setter Property="BorderThickness" Value="0,0,1,1"/>
+            <Setter Property="HorizontalContentAlignment" Value="Left"/>
+        </Style>
+
+        <Style TargetType="DataGridRow">
+            <Setter Property="Background" Value="#252526"/>
+            <Style.Triggers>
+                <Trigger Property="IsSelected" Value="True">
+                    <Setter Property="Background" Value="#3F3F46"/>
+                </Trigger>
+                <Trigger Property="IsMouseOver" Value="True">
+                    <Setter Property="Background" Value="#2D2D30"/>
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+
+        <Style TargetType="DataGridCell">
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="Padding" Value="10,8"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="DataGridCell">
+                        <Border Padding="{TemplateBinding Padding}" 
+                                Background="{TemplateBinding Background}">
+                            <ContentPresenter VerticalAlignment="Center"/>
+                        </Border>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+    </Window.Resources>
+
+    <Grid Margin="20">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+
+        <!-- Título -->
+        <TextBlock Grid.Row="0" 
+                   Text="⚔ BITÁCORA DE AUDITORÍA ⚔" 
+                   Style="{StaticResource TitleStyle}"/>
+
+        <!-- Panel de Filtros -->
+        <Border Grid.Row="1" 
+                Background="#252526" 
+                BorderBrush="#3F3F46" 
+                BorderThickness="1" 
+                CornerRadius="5" 
+                Padding="20" 
+                Margin="0,0,0,15">
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                </Grid.RowDefinitions>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="200"/>
+                    <ColumnDefinition Width="20"/>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="200"/>
+                    <ColumnDefinition Width="20"/>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+
+                <TextBlock Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="8"
+                           Text="Filtros de Búsqueda" 
+                           Style="{StaticResource SubtitleStyle}"
+                           Margin="0,0,0,15"/>
+
+                <!-- Fecha Inicio -->
+                <TextBlock Grid.Row="1" Grid.Column="0" 
+                           Text="Fecha Inicio:" 
+                           Style="{StaticResource LabelStyle}"/>
+                <DatePicker Grid.Row="1" Grid.Column="1" 
+                            SelectedDate="{Binding FechaInicio}"
+                            Style="{StaticResource InputDatePicker}"/>
+
+                <!-- Fecha Fin -->
+                <TextBlock Grid.Row="1" Grid.Column="3" 
+                           Text="Fecha Fin:" 
+                           Style="{StaticResource LabelStyle}"/>
+                <DatePicker Grid.Row="1" Grid.Column="4" 
+                            SelectedDate="{Binding FechaFin}"
+                            Style="{StaticResource InputDatePicker}"/>
+
+                <!-- Usuario -->
+                <TextBlock Grid.Row="1" Grid.Column="6" 
+                           Text="Usuario:" 
+                           Style="{StaticResource LabelStyle}"/>
+                <TextBox Grid.Row="1" Grid.Column="7" 
+                         Text="{Binding UsuarioFiltro, UpdateSourceTrigger=PropertyChanged}"
+                         Style="{StaticResource InputTextBox}"/>
+
+                <!-- Botones de Filtro -->
+                <StackPanel Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="8" 
+                            Orientation="Horizontal" 
+                            HorizontalAlignment="Right"
+                            Margin="0,15,0,0">
+                    <Button Content="🔍 Buscar" 
+                            Command="{Binding BuscarCommand}"
+                            Style="{StaticResource ActionButton}"
+                            Margin="0,0,10,0"/>
+                    <Button Content="🗑 Limpiar Filtros" 
+                            Command="{Binding LimpiarFiltrosCommand}"
+                            Style="{StaticResource SecondaryButton}"
+                            Margin="0,0,10,0"/>
+                    <Button Content="📋 Ver Todos" 
+                            Command="{Binding CargarTodosCommand}"
+                            Style="{StaticResource SecondaryButton}"/>
+                </StackPanel>
+            </Grid>
+        </Border>
+
+        <!-- DataGrid de Logs -->
+        <Border Grid.Row="2" 
+                Background="#252526" 
+                BorderBrush="#3F3F46" 
+                BorderThickness="1" 
+                CornerRadius="5">
+            <Grid>
+                <DataGrid ItemsSource="{Binding Logs}"
+                          SelectedItem="{Binding SelectedLog}"
+                          Style="{StaticResource AuditDataGrid}">
+                    <DataGrid.Columns>
+                        <DataGridTextColumn Header="Fecha/Hora" 
+                                            Binding="{Binding Fecha, StringFormat='dd/MM/yyyy HH:mm:ss'}" 
+                                            Width="150"/>
+                        <DataGridTextColumn Header="Usuario" 
+                                            Binding="{Binding Usuario}" 
+                                            Width="150"/>
+                        <DataGridTextColumn Header="Acción" 
+                                            Binding="{Binding Accion}" 
+                                            Width="250"/>
+                        <DataGridTextColumn Header="Entidad" 
+                                            Binding="{Binding Entidad}" 
+                                            Width="150"/>
+                        <DataGridTextColumn Header="Detalle" 
+                                            Binding="{Binding Detalle}" 
+                                            Width="*"/>
+                    </DataGrid.Columns>
+                </DataGrid>
+
+                <!-- Indicador de carga -->
+                <Border Background="#CC1E1E1E"
+                        Visibility="{Binding IsBusy, Converter={StaticResource BooleanToVisibilityConverter}}">
+                    <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center">
+                        <TextBlock Text="⚔" 
+                                   FontSize="48" 
+                                   Foreground="#8B0000" 
+                                   HorizontalAlignment="Center"
+                                   Margin="0,0,0,10">
+                            <TextBlock.RenderTransform>
+                                <RotateTransform x:Name="LoadingRotation" CenterX="24" CenterY="24"/>
+                            </TextBlock.RenderTransform>
+                            <TextBlock.Triggers>
+                                <EventTrigger RoutedEvent="Loaded">
+                                    <BeginStoryboard>
+                                        <Storyboard RepeatBehavior="Forever">
+                                            <DoubleAnimation Storyboard.TargetName="LoadingRotation"
+                                                           Storyboard.TargetProperty="Angle"
+                                                           From="0" To="360" Duration="0:0:2"/>
+                                        </Storyboard>
+                                    </BeginStoryboard>
+                                </EventTrigger>
+                            </TextBlock.Triggers>
+                        </TextBlock>
+                        <TextBlock Text="Cargando registros..." 
+                                   FontFamily="{StaticResource CinzelFont}"
+                                   FontSize="14" 
+                                   Foreground="#8B0000"/>
+                    </StackPanel>
+                </Border>
+            </Grid>
+        </Border>
+
+        <!-- Panel Inferior -->
+        <Border Grid.Row="3" 
+                Background="#252526" 
+                BorderBrush="#3F3F46" 
+                BorderThickness="1" 
+                CornerRadius="5" 
+                Padding="15" 
+                Margin="0,15,0,0">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
+
+                <!-- Total de registros -->
+                <TextBlock Grid.Column="0" 
+                           Text="{Binding TotalRegistros}"
+                           Style="{StaticResource LabelStyle}"
+                           FontSize="14"
+                           VerticalAlignment="Center"/>
+
+                <!-- Botones de acción -->
+                <Button Grid.Column="1"
+                        Content="📄 Exportar a TXT" 
+                        Command="{Binding ExportarCommand}"
+                        Style="{StaticResource ActionButton}"
+                        Margin="0,0,10,0"/>
+
+                <Button Grid.Column="2"
+                        Content="❌ Cerrar" 
+                        Click="CloseButton_Click"
+                        Style="{StaticResource SecondaryButton}"/>
+            </Grid>
+        </Border>
+    </Grid>
+</Window>

@@ -1,0 +1,309 @@
+<Window x:Class="Marte.WPF.Views.UserManagementView"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="Gestión de Usuarios - MARTE" 
+        Height="700" 
+        Width="1200"
+        WindowStartupLocation="CenterScreen"
+        Background="#1E1E1E"
+        Icon="/Images/Marte-Ico.ico">
+
+    <Window.Resources>
+        <!-- Fuente Cinzel -->
+        <FontFamily x:Key="CinzelFont">Times New Roman</FontFamily>
+
+        <!-- Estilo para botones -->
+        <Style x:Key="ActionButtonStyle" TargetType="Button">
+            <Setter Property="Background" Value="#8B0000"/>
+            <Setter Property="Foreground" Value="White"/>
+            <Setter Property="FontFamily" Value="{StaticResource CinzelFont}"/>
+            <Setter Property="FontSize" Value="14"/>
+            <Setter Property="Padding" Value="30,12"/>
+            <Setter Property="Margin" Value="5"/>
+            <Setter Property="MinWidth" Value="150"/>
+            <Setter Property="MinHeight" Value="45"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border x:Name="border"
+                                Background="{TemplateBinding Background}"
+                                CornerRadius="4">
+                            <ContentPresenter HorizontalAlignment="Center" 
+                                            VerticalAlignment="Center"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="border" Property="Background" Value="#80FFFEEE"/>
+                                <Setter Property="Foreground" Value="#8B0000"/>
+                            </Trigger>
+                            <Trigger Property="IsPressed" Value="True">
+                                <Setter TargetName="border" Property="Background" Value="#80FFDDDD"/>
+                            </Trigger>
+                            <Trigger Property="IsEnabled" Value="False">
+                                <Setter TargetName="border" Property="Background" Value="#555555"/>
+                                <Setter Property="Foreground" Value="#888888"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <!-- Estilo para TextBox -->
+        <Style TargetType="TextBox">
+            <Setter Property="Background" Value="White"/>
+            <Setter Property="Foreground" Value="Black"/>
+            <Setter Property="BorderBrush" Value="#8B0000"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="Padding" Value="8"/>
+            <Setter Property="FontSize" Value="13"/>
+            <Setter Property="FontFamily" Value="{StaticResource CinzelFont}"/>
+        </Style>
+
+        <!-- Estilo para PasswordBox -->
+        <Style TargetType="PasswordBox">
+            <Setter Property="Background" Value="White"/>
+            <Setter Property="Foreground" Value="Black"/>
+            <Setter Property="BorderBrush" Value="#8B0000"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="Padding" Value="8"/>
+            <Setter Property="FontSize" Value="13"/>
+            <Setter Property="FontFamily" Value="{StaticResource CinzelFont}"/>
+        </Style>
+
+        <!-- Estilo para ComboBox -->
+        <Style TargetType="ComboBox">
+            <Setter Property="Background" Value="White"/>
+            <Setter Property="Foreground" Value="Black"/>
+            <Setter Property="BorderBrush" Value="#8B0000"/>
+            <Setter Property="Padding" Value="8"/>
+            <Setter Property="FontSize" Value="13"/>
+            <Setter Property="FontFamily" Value="{StaticResource CinzelFont}"/>
+        </Style>
+
+        <!-- Estilo para Label -->
+        <Style TargetType="Label">
+            <Setter Property="Foreground" Value="White"/>
+            <Setter Property="FontFamily" Value="{StaticResource CinzelFont}"/>
+            <Setter Property="FontSize" Value="13"/>
+        </Style>
+
+        <!-- Estilo para filas del DataGrid -->
+        <Style x:Key="DataGridRowStyle" TargetType="DataGridRow">
+            <Setter Property="Background" Value="Transparent"/>
+            <Style.Triggers>
+                <Trigger Property="IsMouseOver" Value="True">
+                    <Setter Property="Background" Value="Black"/>
+                    <Setter Property="Foreground" Value="White"/>
+                </Trigger>
+                <Trigger Property="IsSelected" Value="True">
+                    <Setter Property="Background" Value="#8B0000"/>
+                    <Setter Property="Foreground" Value="White"/>
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+    </Window.Resources>
+
+    <Grid Margin="20">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+
+        <!-- Header -->
+        <Border Grid.Row="0" 
+                Background="#CC8B0000" 
+                BorderBrush="#8B0000" 
+                BorderThickness="2" 
+                CornerRadius="8" 
+                Padding="20"
+                Margin="0,0,0,20">
+            <TextBlock Text="GESTIÓN DE USUARIOS" 
+                      FontFamily="{StaticResource CinzelFont}"
+                      FontSize="24" 
+                      FontWeight="Bold" 
+                      Foreground="White"
+                      HorizontalAlignment="Center"/>
+        </Border>
+
+        <!-- Content -->
+        <Grid Grid.Row="1">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="2*"/>
+                <ColumnDefinition Width="3*"/>
+            </Grid.ColumnDefinitions>
+
+            <!-- Lista de Usuarios -->
+            <Border Grid.Column="0" 
+                    Background="#CC000000" 
+                    BorderBrush="#8B0000" 
+                    BorderThickness="2" 
+                    CornerRadius="8" 
+                    Padding="15"
+                    Margin="0,0,10,0">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="*"/>
+                    </Grid.RowDefinitions>
+
+                    <TextBlock Grid.Row="0" 
+                              Text="USUARIOS REGISTRADOS" 
+                              FontFamily="{StaticResource CinzelFont}"
+                              FontSize="16" 
+                              FontWeight="Bold" 
+                              Foreground="White"
+                              Margin="0,0,0,15"/>
+
+                    <DataGrid Grid.Row="1" 
+                             ItemsSource="{Binding Usuarios}"
+                             SelectedItem="{Binding SelectedUsuario}"
+                             AutoGenerateColumns="False"
+                             CanUserAddRows="False"
+                             Background="#2D2D30"
+                             Foreground="White"
+                             BorderBrush="#8B0000"
+                             GridLinesVisibility="None"
+                             HeadersVisibility="Column"
+                             SelectionMode="Single"
+                             IsReadOnly="True"
+                             RowStyle="{StaticResource DataGridRowStyle}">
+                        <DataGrid.Columns>
+                            <DataGridTextColumn Header="Usuario" 
+                                              Binding="{Binding NombreUsuario}" 
+                                              Width="*"/>
+                            <DataGridTextColumn Header="Nombre Completo" 
+                                              Binding="{Binding NombreCompleto}" 
+                                              Width="*"/>
+                            <DataGridTextColumn Header="Rol" 
+                                              Binding="{Binding Rol.Nombre}" 
+                                              Width="Auto"/>
+                            <DataGridCheckBoxColumn Header="Activo" 
+                                                  Binding="{Binding Estado}" 
+                                                  Width="60"/>
+                        </DataGrid.Columns>
+                        <DataGrid.ColumnHeaderStyle>
+                            <Style TargetType="DataGridColumnHeader">
+                                <Setter Property="Background" Value="#8B0000"/>
+                                <Setter Property="Foreground" Value="White"/>
+                                <Setter Property="FontWeight" Value="Bold"/>
+                                <Setter Property="Padding" Value="10,5"/>
+                                <Setter Property="BorderThickness" Value="0"/>
+                            </Style>
+                        </DataGrid.ColumnHeaderStyle>
+                        <DataGrid.CellStyle>
+                            <Style TargetType="DataGridCell">
+                                <Setter Property="BorderThickness" Value="0"/>
+                                <Setter Property="Padding" Value="10,5"/>
+                            </Style>
+                        </DataGrid.CellStyle>
+                    </DataGrid>
+                </Grid>
+            </Border>
+
+            <!-- Formulario de Edición -->
+            <Border Grid.Column="1" 
+                    Background="#CC000000" 
+                    BorderBrush="#8B0000" 
+                    BorderThickness="2" 
+                    CornerRadius="8" 
+                    Padding="20"
+                    Margin="10,0,0,0">
+                <ScrollViewer VerticalScrollBarVisibility="Auto">
+                    <StackPanel>
+                        <TextBlock Text="FORMULARIO DE USUARIO" 
+                                  FontFamily="{StaticResource CinzelFont}"
+                                  FontSize="16" 
+                                  FontWeight="Bold" 
+                                  Foreground="White"
+                                  Margin="0,0,0,20"/>
+
+                        <!-- Nombre de Usuario -->
+                        <Label Content="Nombre de Usuario:"/>
+                        <TextBox Text="{Binding NombreUsuario, UpdateSourceTrigger=PropertyChanged}"
+                                IsReadOnly="{Binding IsUsernameReadOnly}"
+                                Margin="0,0,0,15"/>
+
+                        <!-- Contraseña (solo para nuevo o cambio) -->
+                        <Label Content="Contraseña:"/>
+                        <PasswordBox x:Name="txtContraseña"
+                                    IsEnabled="{Binding IsNewMode}"
+                                    Margin="0,0,0,5"/>
+                        <TextBlock Text="Requerida para nuevos usuarios o cambio de contraseña"
+                                  FontSize="10"
+                                  Foreground="#AAAAAA"
+                                  Margin="0,0,0,15"/>
+
+                        <!-- Confirmar Contraseña -->
+                        <Label Content="Confirmar Contraseña:"/>
+                        <PasswordBox x:Name="txtConfirmarContraseña"
+                                    IsEnabled="{Binding IsNewMode}"
+                                    Margin="0,0,0,5"/>
+                        <TextBlock Text="Debe coincidir con la contraseña"
+                                  FontSize="10"
+                                  Foreground="#AAAAAA"
+                                  Margin="0,0,0,15"/>
+
+                        <!-- Nombre Completo -->
+                        <Label Content="Nombre Completo:"/>
+                        <TextBox Text="{Binding NombreCompleto, UpdateSourceTrigger=PropertyChanged}"
+                                IsReadOnly="{Binding IsFormReadOnly}"
+                                Margin="0,0,0,15"/>
+
+                        <!-- Rol -->
+                        <Label Content="Rol:"/>
+                        <ComboBox ItemsSource="{Binding Roles}"
+                                 SelectedItem="{Binding SelectedRol, Mode=TwoWay}"
+                                 DisplayMemberPath="Nombre"
+                                 IsEnabled="{Binding IsRolEnabled}"
+                                 Margin="0,0,0,20"/>
+
+                        <!-- Botones de Acción -->
+                        <WrapPanel HorizontalAlignment="Center">
+                            <Button Content="Nuevo Usuario" 
+                                   Command="{Binding NewUserCommand}"
+                                   Style="{StaticResource ActionButtonStyle}"/>
+                            
+                            <Button Content="Guardar" 
+                                   Command="{Binding SaveUserCommand}"
+                                   Style="{StaticResource ActionButtonStyle}"/>
+                            
+                            <Button Content="Editar" 
+                                   Command="{Binding EditUserCommand}"
+                                   Style="{StaticResource ActionButtonStyle}"/>
+                            
+                            <Button Content="Cancelar" 
+                                   Command="{Binding CancelCommand}"
+                                   Style="{StaticResource ActionButtonStyle}"/>
+                        </WrapPanel>
+
+                        <Separator Margin="0,20" Background="#8B0000"/>
+
+                        <TextBlock Text="ACCIONES DE USUARIO" 
+                                  FontFamily="{StaticResource CinzelFont}"
+                                  FontSize="14" 
+                                  FontWeight="Bold" 
+                                  Foreground="White"
+                                  Margin="0,0,0,15"/>
+
+                        <WrapPanel HorizontalAlignment="Center">
+                            <Button Content="Deshabilitar Usuario" 
+                                   Command="{Binding DisableUserCommand}"
+                                   Style="{StaticResource ActionButtonStyle}"/>
+                            
+                            <Button Content="Habilitar Usuario" 
+                                   Command="{Binding EnableUserCommand}"
+                                   Style="{StaticResource ActionButtonStyle}"/>
+                            
+                            <Button Content="Cambiar Contraseña" 
+                                   Command="{Binding ChangePasswordCommand}"
+                                   Style="{StaticResource ActionButtonStyle}"/>
+                        </WrapPanel>
+                    </StackPanel>
+                </ScrollViewer>
+            </Border>
+        </Grid>
+    </Grid>
+</Window>

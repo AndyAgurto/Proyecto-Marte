@@ -1,0 +1,211 @@
+<Window x:Class="Marte.WPF.Views.ConfigurationView"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="Configuración del Sistema - MARTE" 
+        Height="650" 
+        Width="1000"
+        WindowStartupLocation="CenterScreen"
+        Background="#1E1E1E"
+        Icon="/Images/Marte-Ico.ico">
+
+    <Window.Resources>
+        <!-- Fuente Cinzel -->
+        <FontFamily x:Key="CinzelFont">Times New Roman</FontFamily>
+
+        <!-- Estilo para botones -->
+        <Style x:Key="ActionButtonStyle" TargetType="Button">
+            <Setter Property="Background" Value="#8B0000"/>
+            <Setter Property="Foreground" Value="White"/>
+            <Setter Property="FontFamily" Value="{StaticResource CinzelFont}"/>
+            <Setter Property="FontSize" Value="14"/>
+            <Setter Property="Padding" Value="30,12"/>
+            <Setter Property="Margin" Value="5"/>
+            <Setter Property="MinWidth" Value="150"/>
+            <Setter Property="MinHeight" Value="45"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border x:Name="border"
+                                Background="{TemplateBinding Background}"
+                                CornerRadius="4">
+                            <ContentPresenter HorizontalAlignment="Center" 
+                                            VerticalAlignment="Center"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="border" Property="Background" Value="#80FFFEEE"/>
+                                <Setter Property="Foreground" Value="#8B0000"/>
+                            </Trigger>
+                            <Trigger Property="IsPressed" Value="True">
+                                <Setter TargetName="border" Property="Background" Value="#80FFDDDD"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <!-- Estilo para paneles de módulo -->
+        <Style x:Key="ModulePanelStyle" TargetType="Border">
+            <Setter Property="Background" Value="#CC000000"/>
+            <Setter Property="BorderBrush" Value="#8B0000"/>
+            <Setter Property="BorderThickness" Value="2"/>
+            <Setter Property="CornerRadius" Value="8"/>
+            <Setter Property="Padding" Value="20"/>
+            <Setter Property="Margin" Value="10"/>
+        </Style>
+
+        <!-- Estilo para TextBox -->
+        <Style TargetType="TextBox">
+            <Setter Property="Background" Value="White"/>
+            <Setter Property="Foreground" Value="Black"/>
+            <Setter Property="BorderBrush" Value="#8B0000"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="Padding" Value="8"/>
+            <Setter Property="FontSize" Value="13"/>
+            <Setter Property="FontFamily" Value="{StaticResource CinzelFont}"/>
+        </Style>
+
+        <!-- Estilo para Label -->
+        <Style TargetType="Label">
+            <Setter Property="Foreground" Value="White"/>
+            <Setter Property="FontFamily" Value="{StaticResource CinzelFont}"/>
+            <Setter Property="FontSize" Value="13"/>
+        </Style>
+    </Window.Resources>
+
+    <Grid Margin="20">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+
+        <!-- Header -->
+        <Border Grid.Row="0" 
+                Background="#CC8B0000" 
+                BorderBrush="#8B0000" 
+                BorderThickness="2" 
+                CornerRadius="8" 
+                Padding="20"
+                Margin="0,0,0,20">
+            <TextBlock Text="CONFIGURACIÓN Y PARÁMETROS DEL SISTEMA" 
+                      FontFamily="{StaticResource CinzelFont}"
+                      FontSize="24" 
+                      FontWeight="Bold" 
+                      Foreground="White"
+                      HorizontalAlignment="Center"/>
+        </Border>
+
+        <!-- Content -->
+        <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto">
+            <StackPanel>
+                <!-- Módulo 1: Configuración de Hora de Cierre -->
+                <Border Style="{StaticResource ModulePanelStyle}">
+                    <StackPanel>
+                        <TextBlock Text="⏰ CONFIGURACIÓN DE HORA DE CIERRE" 
+                                  FontFamily="{StaticResource CinzelFont}"
+                                  FontSize="18" 
+                                  FontWeight="Bold" 
+                                  Foreground="White"
+                                  HorizontalAlignment="Center"
+                                  Margin="0,0,0,20"/>
+
+                        <!-- Nombre de Filial -->
+                        <Label Content="Nombre de la Filial:"/>
+                        <TextBox Text="{Binding NombreFilial, UpdateSourceTrigger=PropertyChanged}"
+                                Margin="0,0,0,15"/>
+
+                        <!-- Hora de Cierre -->
+                        <Label Content="Hora de Cierre:"/>
+                        <StackPanel Orientation="Horizontal" Margin="0,0,0,20">
+                            <TextBlock Text="Hora:" 
+                                      Foreground="White" 
+                                      VerticalAlignment="Center" 
+                                      Margin="0,0,10,0"
+                                      FontFamily="{StaticResource CinzelFont}"/>
+                            <TextBox Text="{Binding HoraCierreHora, UpdateSourceTrigger=PropertyChanged}"
+                                    Width="60"
+                                    HorizontalContentAlignment="Center"
+                                    Margin="0,0,20,0"/>
+                            
+                            <TextBlock Text="Minuto:" 
+                                      Foreground="White" 
+                                      VerticalAlignment="Center" 
+                                      Margin="0,0,10,0"
+                                      FontFamily="{StaticResource CinzelFont}"/>
+                            <TextBox Text="{Binding HoraCierreMinuto, UpdateSourceTrigger=PropertyChanged}"
+                                    Width="60"
+                                    HorizontalContentAlignment="Center"/>
+                            
+                            <TextBlock Text="(Formato 24 horas: 0-23)" 
+                                      Foreground="#AAAAAA" 
+                                      VerticalAlignment="Center" 
+                                      Margin="20,0,0,0"
+                                      FontSize="11"/>
+                        </StackPanel>
+
+                        <!-- Botón Guardar -->
+                        <Button Content="Guardar Configuración" 
+                               Command="{Binding SaveConfigCommand}"
+                               Style="{StaticResource ActionButtonStyle}"
+                               HorizontalAlignment="Center"/>
+                    </StackPanel>
+                </Border>
+
+                <!-- Módulo 2: Gestión de Usuarios -->
+                <Border Style="{StaticResource ModulePanelStyle}">
+                    <StackPanel>
+                        <TextBlock Text="👥 GESTIÓN DE USUARIOS" 
+                                  FontFamily="{StaticResource CinzelFont}"
+                                  FontSize="18" 
+                                  FontWeight="Bold" 
+                                  Foreground="White"
+                                  HorizontalAlignment="Center"
+                                  Margin="0,0,0,15"/>
+
+                        <TextBlock Text="Administra usuarios del sistema, roles y permisos de acceso." 
+                                  FontFamily="Times New Roman"
+                                  FontSize="13" 
+                                  Foreground="White" 
+                                  TextWrapping="Wrap"
+                                  HorizontalAlignment="Center"
+                                  Margin="0,0,0,20"/>
+
+                        <Button Content="Abrir Gestión de Usuarios" 
+                               Command="{Binding OpenUserManagementCommand}"
+                               Style="{StaticResource ActionButtonStyle}"
+                               HorizontalAlignment="Center"/>
+                    </StackPanel>
+                </Border>
+
+                <!-- Módulo 3: Gestión de Categorías -->
+                <Border Style="{StaticResource ModulePanelStyle}">
+                    <StackPanel>
+                        <TextBlock Text="📋 GESTIÓN DE CATEGORÍAS" 
+                                  FontFamily="{StaticResource CinzelFont}"
+                                  FontSize="18" 
+                                  FontWeight="Bold" 
+                                  Foreground="White"
+                                  HorizontalAlignment="Center"
+                                  Margin="0,0,0,15"/>
+
+                        <TextBlock Text="Crea, edita y elimina categorías para clasificar asistentes." 
+                                  FontFamily="Times New Roman"
+                                  FontSize="13" 
+                                  Foreground="White" 
+                                  TextWrapping="Wrap"
+                                  HorizontalAlignment="Center"
+                                  Margin="0,0,0,20"/>
+
+                        <Button Content="Abrir Gestión de Categorías" 
+                               Command="{Binding OpenCategoryManagementCommand}"
+                               Style="{StaticResource ActionButtonStyle}"
+                               HorizontalAlignment="Center"/>
+                    </StackPanel>
+                </Border>
+            </StackPanel>
+        </ScrollViewer>
+    </Grid>
+</Window>

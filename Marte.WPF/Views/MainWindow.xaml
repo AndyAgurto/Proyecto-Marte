@@ -1,0 +1,945 @@
+<Window x:Class="Marte.WPF.Views.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="MARTE - Sistema de Gestión de Asistencias" 
+        Height="800" 
+        Width="1200"
+        WindowStartupLocation="CenterScreen"
+        WindowState="Maximized"
+        Icon="/Images/Marte-Ico.ico">
+    
+    <Window.Resources>
+        <!-- Fuente Cinzel (usando Times New Roman como fallback) -->
+        <FontFamily x:Key="CinzelFont">Times New Roman</FontFamily>
+        
+        <!-- Fondo del espacio -->
+        <ImageBrush x:Key="SpaceBackground" 
+                    ImageSource="/Images/space-background.png" 
+                    Stretch="UniformToFill"
+                    Opacity="0.3"/>
+        
+        <!-- Estilo para botones principales -->
+        <Style x:Key="MainButtonStyle" TargetType="Button">
+            <Setter Property="Background" Value="#8B0000"/>
+            <Setter Property="Foreground" Value="White"/>
+            <Setter Property="FontFamily" Value="{StaticResource CinzelFont}"/>
+            <Setter Property="FontSize" Value="16"/>
+            <Setter Property="FontWeight" Value="Bold"/>
+            <Setter Property="BorderThickness" Value="2"/>
+            <Setter Property="BorderBrush" Value="#654321"/>
+            <Setter Property="Padding" Value="20,10"/>
+            <Setter Property="Margin" Value="10"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border Background="{TemplateBinding Background}"
+                                BorderBrush="{TemplateBinding BorderBrush}"
+                                BorderThickness="{TemplateBinding BorderThickness}"
+                                CornerRadius="8">
+                            <ContentPresenter HorizontalAlignment="Center" 
+                                            VerticalAlignment="Center"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter Property="Background" Value="#A00000"/>
+                            </Trigger>
+                            <Trigger Property="IsPressed" Value="True">
+                                <Setter Property="Background" Value="#600000"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <!-- Estilo para paneles de módulo -->
+        <Style x:Key="ModulePanelStyle" TargetType="Border">
+            <Setter Property="Background" Value="#CC000000"/>
+            <Setter Property="BorderBrush" Value="#8B0000"/>
+            <Setter Property="BorderThickness" Value="2"/>
+            <Setter Property="CornerRadius" Value="10"/>
+            <Setter Property="Margin" Value="15"/>
+            <Setter Property="Padding" Value="20"/>
+        </Style>
+
+        <!-- Estilo para títulos de módulo -->
+        <Style x:Key="ModuleTitleStyle" TargetType="TextBlock">
+            <Setter Property="FontFamily" Value="{StaticResource CinzelFont}"/>
+            <Setter Property="FontSize" Value="18"/>
+            <Setter Property="FontWeight" Value="Bold"/>
+            <Setter Property="Foreground" Value="White"/>
+            <Setter Property="HorizontalAlignment" Value="Center"/>
+            <Setter Property="Margin" Value="0,0,0,15"/>
+        </Style>
+    </Window.Resources>
+
+    <Grid Background="{StaticResource SpaceBackground}">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="300"/>
+            <ColumnDefinition Width="*"/>
+        </Grid.ColumnDefinitions>
+
+        <!-- Barra superior con título y usuario (ocupa ambas columnas) -->
+        <Border Grid.Row="0" Grid.ColumnSpan="2"
+                Background="#CC000000" 
+                BorderBrush="#8B0000" 
+                BorderThickness="0,0,0,2">
+            <Grid Margin="20,10">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
+
+                <!-- Logo pequeño -->
+                <Image Grid.Column="0" 
+                       Source="/Images/warrior-logo.png" 
+                       Width="80" 
+                       Height="80" 
+                       Margin="0,0,20,0"/>
+
+                <!-- Título principal -->
+                <TextBlock Grid.Column="1" 
+                          Text="MARTE" 
+                          FontFamily="{StaticResource CinzelFont}"
+                          FontSize="24" 
+                          FontWeight="Bold" 
+                          Foreground="White"
+                          VerticalAlignment="Center"/>
+
+                <!-- Panel de usuario -->
+                <StackPanel Grid.Column="2" 
+                           Orientation="Horizontal" 
+                           VerticalAlignment="Center">
+                    <TextBlock Text="Usuario: " 
+                              FontFamily="{StaticResource CinzelFont}"
+                              FontSize="14" 
+                              Foreground="White" 
+                              VerticalAlignment="Center"/>
+                    <TextBlock x:Name="txtUsuarioActual"
+                              Text="" 
+                              FontFamily="{StaticResource CinzelFont}"
+                              FontSize="14" 
+                              FontWeight="Bold"
+                              Foreground="White" 
+                              VerticalAlignment="Center"
+                              Margin="0,0,20,0"/>
+                    <Button Content="Cerrar Sesión" 
+                            Click="OnLogoutClick"
+                            Background="#8B0000"
+                            Foreground="White"
+                            FontFamily="{StaticResource CinzelFont}"
+                            FontSize="12"
+                            Padding="35,10"
+                            Height="60"
+                            Width="80"
+                            BorderThickness="0"
+                            Cursor="Hand">
+                        <Button.Template>
+                            <ControlTemplate TargetType="Button">
+                                <Border x:Name="border"
+                                        Background="{TemplateBinding Background}"
+                                        BorderBrush="{TemplateBinding BorderBrush}"
+                                        BorderThickness="{TemplateBinding BorderThickness}"
+                                        CornerRadius="3">
+                                    <ContentPresenter HorizontalAlignment="Center" 
+                                                    VerticalAlignment="Center"/>
+                                </Border>
+                                <ControlTemplate.Triggers>
+                                    <Trigger Property="IsMouseOver" Value="True">
+                                        <Setter TargetName="border" Property="Background" Value="#80FFFEEE"/>
+                                        <Setter TargetName="border" Property="BorderBrush" Value="#FFDC143C"/>
+                                        <Setter Property="Foreground" Value="#8B0000"/>
+                                    </Trigger>
+                                    <Trigger Property="IsPressed" Value="True">
+                                        <Setter TargetName="border" Property="Background" Value="#80FFDDDD"/>
+                                        <Setter TargetName="border" Property="BorderBrush" Value="#8B0000"/>
+                                        <Setter Property="Foreground" Value="#8B0000"/>
+                                    </Trigger>
+                                </ControlTemplate.Triggers>
+                            </ControlTemplate>
+                        </Button.Template>
+                    </Button>
+                </StackPanel>
+            </Grid>
+        </Border>
+
+        <!-- Sidebar con módulos -->
+        <Border Grid.Row="1" Grid.Column="0"
+                Background="#DD000000" 
+                BorderBrush="#8B0000" 
+                BorderThickness="0,0,2,0">
+            <ScrollViewer VerticalScrollBarVisibility="Auto" 
+                         HorizontalScrollBarVisibility="Disabled">
+                <StackPanel Margin="15">
+                    <!-- Módulo de Registro y Gestión de Asistentes -->
+                    <Border Background="#CC8B0000" 
+                            BorderBrush="#8B0000" 
+                            BorderThickness="2" 
+                            CornerRadius="8" 
+                            Margin="0,0,0,15" 
+                            Padding="15">
+                        <StackPanel>
+                            <TextBlock Text="GESTIÓN DE ASISTENTES" 
+                                      FontFamily="{StaticResource CinzelFont}"
+                                      FontSize="14" 
+                                      FontWeight="Bold" 
+                                      Foreground="White"
+                                      HorizontalAlignment="Center"
+                                      Margin="0,0,0,10"/>
+                            <TextBlock Text="Registra y gestiona información de asistentes" 
+                                      FontFamily="Times New Roman"
+                                      FontSize="11" 
+                                      Foreground="White" 
+                                      TextWrapping="Wrap"
+                                      HorizontalAlignment="Center"
+                                      Margin="0,0,0,10"/>
+                            <Button Content="Gestionar" 
+                                   Background="#8B0000"
+                                   Foreground="White"
+                                   FontFamily="{StaticResource CinzelFont}"
+                                   FontSize="13"
+                                   FontWeight="Bold"
+                                   Padding="20,16"
+                                   Height="30"
+                                   BorderThickness="0"
+                                   Cursor="Hand"
+                                   Click="OnAsistentesClick">
+                                <Button.Template>
+                                    <ControlTemplate TargetType="Button">
+                                        <Border x:Name="border"
+                                                Background="{TemplateBinding Background}"
+                                                BorderBrush="{TemplateBinding BorderBrush}"
+                                                BorderThickness="{TemplateBinding BorderThickness}"
+                                                CornerRadius="5">
+                                            <ContentPresenter HorizontalAlignment="Center" 
+                                                            VerticalAlignment="Center"/>
+                                        </Border>
+                                        <ControlTemplate.Triggers>
+                                            <Trigger Property="IsMouseOver" Value="True">
+                                                <Setter TargetName="border" Property="Background" Value="#80FFFEEE"/>
+                                                <Setter TargetName="border" Property="BorderBrush" Value="#FFDC143C"/>
+                                                <Setter Property="Foreground" Value="#8B0000"/>
+                                            </Trigger>
+                                            <Trigger Property="IsPressed" Value="True">
+                                                <Setter TargetName="border" Property="Background" Value="#80FFDDDD"/>
+                                                <Setter TargetName="border" Property="BorderBrush" Value="#8B0000"/>
+                                                <Setter Property="Foreground" Value="#8B0000"/>
+                                            </Trigger>
+                                        </ControlTemplate.Triggers>
+                                    </ControlTemplate>
+                                </Button.Template>
+                            </Button>
+                        </StackPanel>
+                    </Border>
+
+                    <!-- Módulo de Control de Asistencia -->
+                    <Border Background="#CC8B0000" 
+                            BorderBrush="#8B0000" 
+                            BorderThickness="2" 
+                            CornerRadius="8" 
+                            Margin="0,0,0,15" 
+                            Padding="15">
+                        <StackPanel>
+                            <TextBlock Text="CONTROL DE ASISTENCIA" 
+                                      FontFamily="{StaticResource CinzelFont}"
+                                      FontSize="14" 
+                                      FontWeight="Bold" 
+                                      Foreground="White"
+                                      HorizontalAlignment="Center"
+                                      Margin="0,0,0,10"/>
+                            <TextBlock Text="Registra asistencia diaria y controla salidas" 
+                                      FontFamily="Times New Roman"
+                                      FontSize="11" 
+                                      Foreground="White" 
+                                      TextWrapping="Wrap"
+                                      HorizontalAlignment="Center"
+                                      Margin="0,0,0,10"/>
+                            <Button Content="Control" 
+                                   Background="#8B0000"
+                                   Foreground="White"
+                                   FontFamily="{StaticResource CinzelFont}"
+                                   FontSize="13"
+                                   FontWeight="Bold"
+                                   Padding="20,16"
+                                   Height="30"
+                                   BorderThickness="0"
+                                   Cursor="Hand"
+                                   Click="OnAsistenciaClick">
+                                <Button.Template>
+                                    <ControlTemplate TargetType="Button">
+                                        <Border x:Name="border"
+                                                Background="{TemplateBinding Background}"
+                                                BorderBrush="{TemplateBinding BorderBrush}"
+                                                BorderThickness="{TemplateBinding BorderThickness}"
+                                                CornerRadius="5">
+                                            <ContentPresenter HorizontalAlignment="Center" 
+                                                            VerticalAlignment="Center"/>
+                                        </Border>
+                                        <ControlTemplate.Triggers>
+                                            <Trigger Property="IsMouseOver" Value="True">
+                                                <Setter TargetName="border" Property="Background" Value="#80FFFEEE"/>
+                                                <Setter TargetName="border" Property="BorderBrush" Value="#FFDC143C"/>
+                                                <Setter Property="Foreground" Value="#8B0000"/>
+                                            </Trigger>
+                                            <Trigger Property="IsPressed" Value="True">
+                                                <Setter TargetName="border" Property="Background" Value="#80FFDDDD"/>
+                                                <Setter TargetName="border" Property="BorderBrush" Value="#8B0000"/>
+                                                <Setter Property="Foreground" Value="#8B0000"/>
+                                            </Trigger>
+                                        </ControlTemplate.Triggers>
+                                    </ControlTemplate>
+                                </Button.Template>
+                            </Button>
+                        </StackPanel>
+                    </Border>
+
+                    <!-- Módulo de Reportes y Estadísticas -->
+                    <Border Background="#CC8B0000" 
+                            BorderBrush="#8B0000" 
+                            BorderThickness="2" 
+                            CornerRadius="8" 
+                            Margin="0,0,0,15" 
+                            Padding="15">
+                        <StackPanel>
+                            <TextBlock Text="REPORTES Y ESTADÍSTICAS" 
+                                      FontFamily="{StaticResource CinzelFont}"
+                                      FontSize="14" 
+                                      FontWeight="Bold" 
+                                      Foreground="White"
+                                      HorizontalAlignment="Center"
+                                      Margin="0,0,0,10"/>
+                            <TextBlock Text="Genera reportes detallados y estadísticas" 
+                                      FontFamily="Times New Roman"
+                                      FontSize="11" 
+                                      Foreground="White" 
+                                      TextWrapping="Wrap"
+                                      HorizontalAlignment="Center"
+                                      Margin="0,0,0,10"/>
+                            <Button Content="Reportes" 
+                                   Background="#8B0000"
+                                   Foreground="White"
+                                   FontFamily="{StaticResource CinzelFont}"
+                                   FontSize="13"
+                                   FontWeight="Bold"
+                                   Padding="20,16"
+                                   Height="30"
+                                   BorderThickness="0"
+                                   Cursor="Hand"
+                                   Click="OnReportesClick">
+                                <Button.Template>
+                                    <ControlTemplate TargetType="Button">
+                                        <Border x:Name="border"
+                                                Background="{TemplateBinding Background}"
+                                                BorderBrush="{TemplateBinding BorderBrush}"
+                                                BorderThickness="{TemplateBinding BorderThickness}"
+                                                CornerRadius="5">
+                                            <ContentPresenter HorizontalAlignment="Center" 
+                                                            VerticalAlignment="Center"/>
+                                        </Border>
+                                        <ControlTemplate.Triggers>
+                                            <Trigger Property="IsMouseOver" Value="True">
+                                                <Setter TargetName="border" Property="Background" Value="#80FFFEEE"/>
+                                                <Setter TargetName="border" Property="BorderBrush" Value="#FFDC143C"/>
+                                                <Setter Property="Foreground" Value="#8B0000"/>
+                                            </Trigger>
+                                            <Trigger Property="IsPressed" Value="True">
+                                                <Setter TargetName="border" Property="Background" Value="#80FFDDDD"/>
+                                                <Setter TargetName="border" Property="BorderBrush" Value="#8B0000"/>
+                                                <Setter Property="Foreground" Value="#8B0000"/>
+                                            </Trigger>
+                                        </ControlTemplate.Triggers>
+                                    </ControlTemplate>
+                                </Button.Template>
+                            </Button>
+                        </StackPanel>
+                    </Border>
+
+                    <!-- Módulo de Auditoría -->
+                    <Border Background="#CC8B0000" 
+                            BorderBrush="#8B0000" 
+                            BorderThickness="2" 
+                            CornerRadius="8" 
+                            Margin="0,0,0,15" 
+                            Padding="15">
+                        <StackPanel>
+                            <TextBlock Text="BITÁCORA DE AUDITORÍA" 
+                                      FontFamily="{StaticResource CinzelFont}"
+                                      FontSize="14" 
+                                      FontWeight="Bold" 
+                                      Foreground="White"
+                                      HorizontalAlignment="Center"
+                                      Margin="0,0,0,10"/>
+                            <TextBlock Text="Consulta y exporta el historial de acciones" 
+                                      FontFamily="Times New Roman"
+                                      FontSize="11" 
+                                      Foreground="White" 
+                                      TextWrapping="Wrap"
+                                      HorizontalAlignment="Center"
+                                      Margin="0,0,0,10"/>
+                            <Button Content="Auditoría" 
+                                   Background="#8B0000"
+                                   Foreground="White"
+                                   FontFamily="{StaticResource CinzelFont}"
+                                   FontSize="13"
+                                   FontWeight="Bold"
+                                   Padding="20,16"
+                                   Height="30"
+                                   BorderThickness="0"
+                                   Cursor="Hand"
+                                   Click="OnAuditoriaClick">
+                                <Button.Template>
+                                    <ControlTemplate TargetType="Button">
+                                        <Border x:Name="border"
+                                                Background="{TemplateBinding Background}"
+                                                BorderBrush="{TemplateBinding BorderBrush}"
+                                                BorderThickness="{TemplateBinding BorderThickness}"
+                                                CornerRadius="5">
+                                            <ContentPresenter HorizontalAlignment="Center" 
+                                                            VerticalAlignment="Center"/>
+                                        </Border>
+                                        <ControlTemplate.Triggers>
+                                            <Trigger Property="IsMouseOver" Value="True">
+                                                <Setter TargetName="border" Property="Background" Value="#80FFFEEE"/>
+                                                <Setter TargetName="border" Property="BorderBrush" Value="#FFDC143C"/>
+                                                <Setter Property="Foreground" Value="#8B0000"/>
+                                            </Trigger>
+                                            <Trigger Property="IsPressed" Value="True">
+                                                <Setter TargetName="border" Property="Background" Value="#80FFDDDD"/>
+                                                <Setter TargetName="border" Property="BorderBrush" Value="#8B0000"/>
+                                                <Setter Property="Foreground" Value="#8B0000"/>
+                                            </Trigger>
+                                        </ControlTemplate.Triggers>
+                                    </ControlTemplate>
+                                </Button.Template>
+                            </Button>
+                        </StackPanel>
+                    </Border>
+
+                    <!-- Módulo de Configuración y Parámetros -->
+                    <Border Background="#CC8B0000" 
+                            BorderBrush="#8B0000" 
+                            BorderThickness="2" 
+                            CornerRadius="8" 
+                            Margin="0,0,0,15" 
+                            Padding="15">
+                        <StackPanel>
+                            <TextBlock Text="CONFIGURACIÓN" 
+                                      FontFamily="{StaticResource CinzelFont}"
+                                      FontSize="14" 
+                                      FontWeight="Bold" 
+                                      Foreground="White"
+                                      HorizontalAlignment="Center"
+                                      Margin="0,0,0,10"/>
+                            <TextBlock Text="Configura parámetros del sistema" 
+                                      FontFamily="Times New Roman"
+                                      FontSize="11" 
+                                      Foreground="White" 
+                                      TextWrapping="Wrap"
+                                      HorizontalAlignment="Center"
+                                      Margin="0,0,0,10"/>
+                            <Button Content="Configurar" 
+                                   Background="#8B0000"
+                                   Foreground="White"
+                                   FontFamily="{StaticResource CinzelFont}"
+                                   FontSize="13"
+                                   FontWeight="Bold"
+                                   Padding="20,16"
+                                   Height="30"
+                                   BorderThickness="0"
+                                   Cursor="Hand"
+                                   Click="OnConfiguracionClick">
+                                <Button.Template>
+                                    <ControlTemplate TargetType="Button">
+                                        <Border x:Name="border"
+                                                Background="{TemplateBinding Background}"
+                                                BorderBrush="{TemplateBinding BorderBrush}"
+                                                BorderThickness="{TemplateBinding BorderThickness}"
+                                                CornerRadius="5">
+                                            <ContentPresenter HorizontalAlignment="Center" 
+                                                            VerticalAlignment="Center"/>
+                                        </Border>
+                                        <ControlTemplate.Triggers>
+                                            <Trigger Property="IsMouseOver" Value="True">
+                                                <Setter TargetName="border" Property="Background" Value="#80FFFEEE"/>
+                                                <Setter TargetName="border" Property="BorderBrush" Value="#FFDC143C"/>
+                                                <Setter Property="Foreground" Value="#8B0000"/>
+                                            </Trigger>
+                                            <Trigger Property="IsPressed" Value="True">
+                                                <Setter TargetName="border" Property="Background" Value="#80FFDDDD"/>
+                                                <Setter TargetName="border" Property="BorderBrush" Value="#8B0000"/>
+                                                <Setter Property="Foreground" Value="#8B0000"/>
+                                            </Trigger>
+                                        </ControlTemplate.Triggers>
+                                    </ControlTemplate>
+                                </Button.Template>
+                            </Button>
+                        </StackPanel>
+                    </Border>
+                </StackPanel>
+            </ScrollViewer>
+        </Border>
+
+        <!-- Dashboard - Área principal -->
+        <ScrollViewer Grid.Row="1" Grid.Column="1" 
+                     VerticalScrollBarVisibility="Auto" 
+                     HorizontalScrollBarVisibility="Disabled">
+            <Grid Margin="20">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                </Grid.RowDefinitions>
+
+                <!-- Título del Panel -->
+                <TextBlock Grid.Row="0" 
+                          Text="PANEL DE INDICADORES DE ASISTENCIA" 
+                          FontFamily="{StaticResource CinzelFont}"
+                          FontSize="24" 
+                          FontWeight="Bold" 
+                          Foreground="White"
+                          HorizontalAlignment="Center"
+                          Margin="0,0,0,5"/>
+
+                <!-- Fila 1: Indicadores principales -->
+                <Grid Grid.Row="1" Margin="0,0,0,20">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
+
+                    <!-- Total de asistentes del día -->
+                    <Border Grid.Column="0" Style="{StaticResource ModulePanelStyle}" Margin="5">
+                        <StackPanel HorizontalAlignment="Center">
+                            <TextBlock Text="👥" 
+                                      FontSize="32" 
+                                      HorizontalAlignment="Center" 
+                                      Foreground="White"
+                                      Margin="0,0,0,10"/>
+                            <TextBlock Text="ASISTENTES HOY" 
+                                      FontFamily="{StaticResource CinzelFont}"
+                                      FontSize="14" 
+                                      FontWeight="Bold" 
+                                      Foreground="White"
+                                      HorizontalAlignment="Center"
+                                      Margin="0,0,0,5"/>
+                            <TextBlock x:Name="txtAsistentesHoy"
+                                      Text="0" 
+                                      FontFamily="{StaticResource CinzelFont}"
+                                      FontSize="28" 
+                                      FontWeight="Bold" 
+                                      Foreground="#00FF00"
+                                      HorizontalAlignment="Center"/>
+                        </StackPanel>
+                    </Border>
+
+                    <!-- Asistentes que se quedaron hasta el cierre -->
+                    <Border Grid.Column="1" Style="{StaticResource ModulePanelStyle}" Margin="5">
+                        <StackPanel HorizontalAlignment="Center">
+                            <TextBlock Text="⏰" 
+                                      FontSize="32" 
+                                      HorizontalAlignment="Center" 
+                                      Foreground="White"
+                                      Margin="0,0,0,10"/>
+                            <TextBlock Text="HASTA CIERRE AYER" 
+                                      FontFamily="{StaticResource CinzelFont}"
+                                      FontSize="14" 
+                                      FontWeight="Bold" 
+                                      Foreground="White"
+                                      HorizontalAlignment="Center"
+                                      Margin="0,0,0,5"/>
+                            <TextBlock x:Name="txtHastaCierre"
+                                      Text="0" 
+                                      FontFamily="{StaticResource CinzelFont}"
+                                      FontSize="28" 
+                                      FontWeight="Bold" 
+                                      Foreground="#FFD700"
+                                      HorizontalAlignment="Center"/>
+                        </StackPanel>
+                    </Border>
+
+                    <!-- Tasa de puntualidad -->
+                    <Border Grid.Column="2" Style="{StaticResource ModulePanelStyle}" Margin="5">
+                        <StackPanel HorizontalAlignment="Center">
+                            <TextBlock Text="🔄" 
+                                      FontSize="32" 
+                                      HorizontalAlignment="Center" 
+                                      Foreground="White"
+                                      Margin="0,0,0,10"/>
+                            <TextBlock Text="PUNTUALIDAD" 
+                                      FontFamily="{StaticResource CinzelFont}"
+                                      FontSize="14" 
+                                      FontWeight="Bold" 
+                                      Foreground="White"
+                                      HorizontalAlignment="Center"
+                                      Margin="0,0,0,5"/>
+                            <TextBlock x:Name="txtPuntualidad"
+                                      Text="0%" 
+                                      FontFamily="{StaticResource CinzelFont}"
+                                      FontSize="28" 
+                                      FontWeight="Bold" 
+                                      Foreground="#00BFFF"
+                                      HorizontalAlignment="Center"/>
+                        </StackPanel>
+                    </Border>
+
+                    <!-- Total registrados -->
+                    <Border Grid.Column="3" Style="{StaticResource ModulePanelStyle}" Margin="5">
+                        <StackPanel HorizontalAlignment="Center">
+                            <TextBlock Text="🏢" 
+                                      FontSize="32" 
+                                      HorizontalAlignment="Center" 
+                                      Foreground="White"
+                                      Margin="0,0,0,10"/>
+                            <TextBlock Text="TOTAL REGISTRADOS" 
+                                      FontFamily="{StaticResource CinzelFont}"
+                                      FontSize="14" 
+                                      FontWeight="Bold" 
+                                      Foreground="White"
+                                      HorizontalAlignment="Center"
+                                      Margin="0,0,0,5"/>
+                            <TextBlock x:Name="txtTotalRegistrados"
+                                      Text="0" 
+                                      FontFamily="{StaticResource CinzelFont}"
+                                      FontSize="28" 
+                                      FontWeight="Bold" 
+                                      Foreground="#FF6347"
+                                      HorizontalAlignment="Center"/>
+                        </StackPanel>
+                    </Border>
+                </Grid>
+
+                <!-- Fila 2: Asistentes por categoría (DINÁMICA) -->
+                <Border Grid.Row="2" Style="{StaticResource ModulePanelStyle}" Margin="0,0,0,20">
+                    <StackPanel>
+                        <TextBlock Text="ASISTENTES POR CATEGORÍA" 
+                                  FontFamily="{StaticResource CinzelFont}"
+                                  FontSize="18" 
+                                  FontWeight="Bold" 
+                                  Foreground="White"
+                                  HorizontalAlignment="Center"
+                                  Margin="0,0,0,15"/>
+                        
+                        <!-- Filtros de selección -->
+                        <Grid Margin="0,0,0,20">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="20"/>
+                                <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
+                            
+                            <!-- Selector de Categoría -->
+                            <StackPanel Grid.Column="0">
+                                <TextBlock Text="Categoría:" 
+                                          FontFamily="{StaticResource CinzelFont}"
+                                          FontSize="12" 
+                                          Foreground="White"
+                                          Margin="0,0,0,5"/>
+                                <ComboBox x:Name="cmbCategoria"
+                                         FontFamily="{StaticResource CinzelFont}"
+                                         FontSize="14"
+                                         Height="35"
+                                         Background="#1A1A1A"
+                                         Foreground="White"
+                                         BorderBrush="#8B0000"
+                                         BorderThickness="2"
+                                         SelectionChanged="OnCategoriaChanged">
+                                    <ComboBox.Resources>
+                                        <SolidColorBrush x:Key="{x:Static SystemColors.HighlightBrushKey}" Color="#8B0000"/>
+                                        <SolidColorBrush x:Key="{x:Static SystemColors.HighlightTextBrushKey}" Color="White"/>
+                                    </ComboBox.Resources>
+                                    <ComboBox.ItemContainerStyle>
+                                        <Style TargetType="ComboBoxItem">
+                                            <Setter Property="Background" Value="#1A1A1A"/>
+                                            <Setter Property="Foreground" Value="White"/>
+                                            <Setter Property="FontFamily" Value="{StaticResource CinzelFont}"/>
+                                            <Style.Triggers>
+                                                <Trigger Property="IsMouseOver" Value="True">
+                                                    <Setter Property="Background" Value="#8B0000"/>
+                                                    <Setter Property="Foreground" Value="White"/>
+                                                </Trigger>
+                                                <Trigger Property="IsSelected" Value="True">
+                                                    <Setter Property="Background" Value="#8B0000"/>
+                                                    <Setter Property="Foreground" Value="White"/>
+                                                </Trigger>
+                                            </Style.Triggers>
+                                        </Style>
+                                    </ComboBox.ItemContainerStyle>
+                                </ComboBox>
+                            </StackPanel>
+                            
+                            <!-- Selector de Grupo (solo visible para Miembros) -->
+                            <StackPanel Grid.Column="2" x:Name="pnlGrupo" Visibility="Collapsed">
+                                <TextBlock Text="Grupo:" 
+                                          FontFamily="{StaticResource CinzelFont}"
+                                          FontSize="12" 
+                                          Foreground="White"
+                                          Margin="0,0,0,5"/>
+                                <ComboBox x:Name="cmbGrupo"
+                                         FontFamily="{StaticResource CinzelFont}"
+                                         FontSize="14"
+                                         Height="35"
+                                         Background="#1A1A1A"
+                                         Foreground="White"
+                                         BorderBrush="#8B0000"
+                                         BorderThickness="2"
+                                         SelectionChanged="OnGrupoChanged">
+                                    <ComboBox.Resources>
+                                        <SolidColorBrush x:Key="{x:Static SystemColors.HighlightBrushKey}" Color="#8B0000"/>
+                                        <SolidColorBrush x:Key="{x:Static SystemColors.HighlightTextBrushKey}" Color="White"/>
+                                    </ComboBox.Resources>
+                                    <ComboBox.ItemContainerStyle>
+                                        <Style TargetType="ComboBoxItem">
+                                            <Setter Property="Background" Value="#1A1A1A"/>
+                                            <Setter Property="Foreground" Value="White"/>
+                                            <Setter Property="FontFamily" Value="{StaticResource CinzelFont}"/>
+                                            <Style.Triggers>
+                                                <Trigger Property="IsMouseOver" Value="True">
+                                                    <Setter Property="Background" Value="#8B0000"/>
+                                                    <Setter Property="Foreground" Value="White"/>
+                                                </Trigger>
+                                                <Trigger Property="IsSelected" Value="True">
+                                                    <Setter Property="Background" Value="#8B0000"/>
+                                                    <Setter Property="Foreground" Value="White"/>
+                                                </Trigger>
+                                            </Style.Triggers>
+                                        </Style>
+                                    </ComboBox.ItemContainerStyle>
+                                </ComboBox>
+                            </StackPanel>
+                        </Grid>
+                        
+                        <!-- Resultado -->
+                        <Border Background="#AA8B0000"
+                                BorderBrush="#8B0000"
+                                BorderThickness="2"
+                                CornerRadius="10"
+                                Padding="20"
+                                HorizontalAlignment="Center"
+                                MinWidth="300">
+                            <StackPanel HorizontalAlignment="Center">
+                                <TextBlock x:Name="txtCategoriaLabel"
+                                          Text="Seleccione una categoría" 
+                                          FontFamily="{StaticResource CinzelFont}"
+                                          FontSize="14" 
+                                          Foreground="White"
+                                          HorizontalAlignment="Center"
+                                          Margin="0,0,0,10"/>
+                                <TextBlock x:Name="txtCategoriaTotal"
+                                          Text="--" 
+                                          FontFamily="{StaticResource CinzelFont}"
+                                          FontSize="48" 
+                                          FontWeight="Bold" 
+                                          Foreground="#00FF00"
+                                          HorizontalAlignment="Center"/>
+                                <TextBlock Text="asistentes" 
+                                          FontFamily="{StaticResource CinzelFont}"
+                                          FontSize="12" 
+                                          Foreground="White"
+                                          HorizontalAlignment="Center"
+                                          Margin="0,5,0,0"/>
+                            </StackPanel>
+                        </Border>
+                    </StackPanel>
+                </Border>
+
+                <!-- Fila 3: Top 5 más constantes -->
+                <Border Grid.Row="3" Style="{StaticResource ModulePanelStyle}">
+                    <StackPanel>
+                        <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,0,0,20">
+                            <TextBlock Text="🏆" 
+                                      FontSize="30" 
+                                      Foreground="White"
+                                      Margin="0,0,10,0"/>
+                            <TextBlock Text="TOP 5 MÁS CONSTANTES" 
+                                      FontFamily="{StaticResource CinzelFont}"
+                                      FontSize="18" 
+                                      FontWeight="Bold" 
+                                      Foreground="White"
+                                      VerticalAlignment="Center"/>
+                        </StackPanel>
+                        
+                        <!-- Encabezados con fondo -->
+                        <Border Background="#AA8B0000" 
+                                BorderBrush="#8B0000" 
+                                BorderThickness="1" 
+                                CornerRadius="5" 
+                                Margin="0,0,0,10" 
+                                Padding="10,8">
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="60"/>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="100"/>
+                                    <ColumnDefinition Width="80"/>
+                                </Grid.ColumnDefinitions>
+                                <TextBlock Grid.Column="0" Text="PUESTO" FontFamily="{StaticResource CinzelFont}" FontSize="12" FontWeight="Bold" Foreground="White" HorizontalAlignment="Center"/>
+                                <TextBlock Grid.Column="1" Text="NOMBRE COMPLETO" FontFamily="{StaticResource CinzelFont}" FontSize="12" FontWeight="Bold" Foreground="White" HorizontalAlignment="Center"/>
+                                <TextBlock Grid.Column="2" Text="ASISTENCIAS" FontFamily="{StaticResource CinzelFont}" FontSize="12" FontWeight="Bold" Foreground="White" HorizontalAlignment="Center"/>
+                                <TextBlock Grid.Column="3" Text="PORCENTAJE" FontFamily="{StaticResource CinzelFont}" FontSize="12" FontWeight="Bold" Foreground="White" HorizontalAlignment="Center"/>
+                            </Grid>
+                        </Border>
+
+                        <!-- Primer lugar -->
+                        <Border x:Name="pnlTop1"
+                                Background="#AA004400" 
+                                BorderBrush="#00FF00" 
+                                BorderThickness="2" 
+                                CornerRadius="5" 
+                                Margin="0,0,0,8" 
+                                Padding="10,12">
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="60"/>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="100"/>
+                                    <ColumnDefinition Width="80"/>
+                                </Grid.ColumnDefinitions>
+                                <TextBlock Grid.Column="0" Text="🏆 1°" FontSize="14" FontWeight="Bold" Foreground="#00FF00" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                <TextBlock x:Name="txtTop1Nombre" Grid.Column="1" Text="" FontFamily="{StaticResource CinzelFont}" FontSize="14" FontWeight="Bold" Foreground="White" VerticalAlignment="Center"/>
+                                <TextBlock x:Name="txtTop1Asistencias" Grid.Column="2" Text="" FontFamily="{StaticResource CinzelFont}" FontSize="13" FontWeight="Bold" Foreground="#00FF00" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                <TextBlock x:Name="txtTop1Porcentaje" Grid.Column="3" Text="" FontFamily="{StaticResource CinzelFont}" FontSize="16" FontWeight="Bold" Foreground="#00FF00" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                            </Grid>
+                        </Border>
+
+                        <!-- Segundo lugar -->
+                        <Border x:Name="pnlTop2"
+                                Background="#AA444400" 
+                                BorderBrush="#FFD700" 
+                                BorderThickness="2" 
+                                CornerRadius="5" 
+                                Margin="0,0,0,8" 
+                                Padding="10,12">
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="60"/>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="100"/>
+                                    <ColumnDefinition Width="80"/>
+                                </Grid.ColumnDefinitions>
+                                <TextBlock Grid.Column="0" Text="🥈 2°" FontSize="14" FontWeight="Bold" Foreground="#FFD700" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                <TextBlock x:Name="txtTop2Nombre" Grid.Column="1" Text="" FontFamily="{StaticResource CinzelFont}" FontSize="14" FontWeight="Bold" Foreground="White" VerticalAlignment="Center"/>
+                                <TextBlock x:Name="txtTop2Asistencias" Grid.Column="2" Text="" FontFamily="{StaticResource CinzelFont}" FontSize="13" FontWeight="Bold" Foreground="#FFD700" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                <TextBlock x:Name="txtTop2Porcentaje" Grid.Column="3" Text="" FontFamily="{StaticResource CinzelFont}" FontSize="16" FontWeight="Bold" Foreground="#FFD700" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                            </Grid>
+                        </Border>
+
+                        <!-- Tercer lugar -->
+                        <Border x:Name="pnlTop3"
+                                Background="#AA2D1B06" 
+                                BorderBrush="#CD7F32" 
+                                BorderThickness="2" 
+                                CornerRadius="5" 
+                                Margin="0,0,0,8" 
+                                Padding="10,12">
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="60"/>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="100"/>
+                                    <ColumnDefinition Width="80"/>
+                                </Grid.ColumnDefinitions>
+                                <TextBlock Grid.Column="0" Text="🥉 3°" FontSize="14" FontWeight="Bold" Foreground="#CD7F32" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                <TextBlock x:Name="txtTop3Nombre" Grid.Column="1" Text="" FontFamily="{StaticResource CinzelFont}" FontSize="14" FontWeight="Bold" Foreground="White" VerticalAlignment="Center"/>
+                                <TextBlock x:Name="txtTop3Asistencias" Grid.Column="2" Text="" FontFamily="{StaticResource CinzelFont}" FontSize="13" FontWeight="Bold" Foreground="#CD7F32" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                <TextBlock x:Name="txtTop3Porcentaje" Grid.Column="3" Text="" FontFamily="{StaticResource CinzelFont}" FontSize="16" FontWeight="Bold" Foreground="#CD7F32" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                            </Grid>
+                        </Border>
+
+                        <!-- Cuarto lugar -->
+                        <Border x:Name="pnlTop4"
+                                Background="#AA222222" 
+                                BorderBrush="#CCCCCC" 
+                                BorderThickness="1" 
+                                CornerRadius="5" 
+                                Margin="0,0,0,8" 
+                                Padding="10,10">
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="60"/>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="100"/>
+                                    <ColumnDefinition Width="80"/>
+                                </Grid.ColumnDefinitions>
+                                <TextBlock Grid.Column="0" Text="4°" FontSize="14" FontWeight="Bold" Foreground="#CCCCCC" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                <TextBlock x:Name="txtTop4Nombre" Grid.Column="1" Text="" FontFamily="{StaticResource CinzelFont}" FontSize="13" Foreground="White" VerticalAlignment="Center"/>
+                                <TextBlock x:Name="txtTop4Asistencias" Grid.Column="2" Text="" FontFamily="{StaticResource CinzelFont}" FontSize="12" Foreground="#CCCCCC" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                <TextBlock x:Name="txtTop4Porcentaje" Grid.Column="3" Text="" FontFamily="{StaticResource CinzelFont}" FontSize="14" FontWeight="Bold" Foreground="#CCCCCC" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                            </Grid>
+                        </Border>
+
+                        <!-- Quinto lugar -->
+                        <Border x:Name="pnlTop5"
+                                Background="#AA222222" 
+                                BorderBrush="#CCCCCC" 
+                                BorderThickness="1" 
+                                CornerRadius="5" 
+                                Margin="0,0,0,0" 
+                                Padding="10,10">
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="60"/>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="100"/>
+                                    <ColumnDefinition Width="80"/>
+                                </Grid.ColumnDefinitions>
+                                <TextBlock Grid.Column="0" Text="5°" FontSize="14" FontWeight="Bold" Foreground="#CCCCCC" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                <TextBlock x:Name="txtTop5Nombre" Grid.Column="1" Text="" FontFamily="{StaticResource CinzelFont}" FontSize="13" Foreground="White" VerticalAlignment="Center"/>
+                                <TextBlock x:Name="txtTop5Asistencias" Grid.Column="2" Text="" FontFamily="{StaticResource CinzelFont}" FontSize="12" Foreground="#CCCCCC" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                <TextBlock x:Name="txtTop5Porcentaje" Grid.Column="3" Text="" FontFamily="{StaticResource CinzelFont}" FontSize="14" FontWeight="Bold" Foreground="#CCCCCC" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                            </Grid>
+                        </Border>
+
+                        <!-- Mensaje cuando no hay registros -->
+                        <TextBlock x:Name="txtNoRegistros"
+                                   Text="No existen registros actualmente"
+                                   FontFamily="{StaticResource CinzelFont}"
+                                   FontSize="16"
+                                   FontStyle="Italic"
+                                   Foreground="#CCCCCC"
+                                   HorizontalAlignment="Center"
+                                   VerticalAlignment="Center"
+                                   Margin="0,20,0,20"
+                                   Visibility="Collapsed"/>
+                    </StackPanel>
+                </Border>
+            </Grid>
+        </ScrollViewer>
+
+        <!-- Barra inferior con información (ocupa ambas columnas) -->
+        <Border Grid.Row="2" Grid.ColumnSpan="2"
+                Background="#CC000000" 
+                BorderBrush="#8B0000" 
+                BorderThickness="0,2,0,0">
+            <Grid Margin="20,5">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
+
+                <TextBlock Grid.Column="0" 
+                          Text="PROYECTO MARTE v1.0 - Sistema de Gestión de Asistencias" 
+                          FontFamily="{StaticResource CinzelFont}"
+                          FontSize="12" 
+                          Foreground="White" 
+                          VerticalAlignment="Center"/>
+
+                <TextBlock Grid.Column="1" 
+                          x:Name="txtFechaHora"
+                          FontFamily="{StaticResource CinzelFont}"
+                          FontSize="12" 
+                          Foreground="White" 
+                          VerticalAlignment="Center"/>
+            </Grid>
+        </Border>
+    </Grid>
+</Window>

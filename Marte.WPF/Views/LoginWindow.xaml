@@ -1,0 +1,217 @@
+﻿<Window x:Class="Marte.WPF.Views.LoginWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="MARTE - Sistema de Gestion de Asistencias" 
+        Height="520" 
+        Width="800"
+        WindowStartupLocation="CenterScreen"
+        ResizeMode="NoResize"
+        Icon="/Images/Marte-Ico.ico">
+    
+    <Window.Resources>
+        <FontFamily x:Key="CinzelFont">Times New Roman</FontFamily>
+        
+        <ImageBrush x:Key="SpaceBackground" 
+                    ImageSource="/Images/space-background.png" 
+                    Stretch="UniformToFill"/>
+        
+        <Style x:Key="LoginButtonStyle" TargetType="Button">
+            <Setter Property="Background" Value="#FF8B0000"/>
+            <Setter Property="Foreground" Value="White"/>
+            <Setter Property="FontFamily" Value="{StaticResource CinzelFont}"/>
+            <Setter Property="FontSize" Value="14"/>
+            <Setter Property="FontWeight" Value="Bold"/>
+            <Setter Property="BorderThickness" Value="2"/>
+            <Setter Property="BorderBrush" Value="#FF654321"/>
+            <Setter Property="Padding" Value="20,10"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border x:Name="border"
+                                Background="{TemplateBinding Background}"
+                                BorderBrush="{TemplateBinding BorderBrush}"
+                                BorderThickness="{TemplateBinding BorderThickness}"
+                                CornerRadius="5">
+                            <ContentPresenter HorizontalAlignment="Center" 
+                                            VerticalAlignment="Center"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="border" Property="Background" Value="#FFFFFEEE"/>
+                                <Setter TargetName="border" Property="BorderBrush" Value="#FFDC143C"/>
+                                <Setter Property="Foreground" Value="#FF8B0000"/>
+                            </Trigger>
+                            <Trigger Property="IsPressed" Value="True">
+                                <Setter TargetName="border" Property="Background" Value="#FFFFDDDD"/>
+                                <Setter TargetName="border" Property="BorderBrush" Value="#FF8B0000"/>
+                                <Setter Property="Foreground" Value="#FF8B0000"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <Style x:Key="LoginTextBoxStyle" TargetType="TextBox">
+            <Setter Property="FontFamily" Value="{StaticResource CinzelFont}"/>
+            <Setter Property="FontSize" Value="14"/>
+            <Setter Property="Padding" Value="10,5"/>
+            <Setter Property="BorderThickness" Value="2"/>
+            <Setter Property="BorderBrush" Value="#FF8B0000"/>
+            <Setter Property="Background" Value="White"/>
+            <Setter Property="Foreground" Value="Black"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="TextBox">
+                        <Border x:Name="border"
+                                Background="{TemplateBinding Background}"
+                                BorderBrush="{TemplateBinding BorderBrush}"
+                                BorderThickness="{TemplateBinding BorderThickness}"
+                                CornerRadius="3">
+                            <ScrollViewer x:Name="PART_ContentHost" 
+                                        Focusable="false" 
+                                        HorizontalScrollBarVisibility="Hidden" 
+                                        VerticalScrollBarVisibility="Hidden"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="border" Property="Background" Value="#FFFFFEEE"/>
+                                <Setter TargetName="border" Property="BorderBrush" Value="#FFDC143C"/>
+                            </Trigger>
+                            <Trigger Property="IsFocused" Value="True">
+                                <Setter TargetName="border" Property="Background" Value="#FFFFDDDD"/>
+                                <Setter TargetName="border" Property="BorderBrush" Value="#FFB22222"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <Style x:Key="LoginPasswordBoxStyle" TargetType="PasswordBox">
+            <Setter Property="FontFamily" Value="{StaticResource CinzelFont}"/>
+            <Setter Property="FontSize" Value="14"/>
+            <Setter Property="Padding" Value="10,5"/>
+            <Setter Property="BorderThickness" Value="2"/>
+            <Setter Property="BorderBrush" Value="#FF8B0000"/>
+            <Setter Property="Background" Value="White"/>
+            <Setter Property="Foreground" Value="Black"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="PasswordBox">
+                        <Border x:Name="border"
+                                Background="{TemplateBinding Background}"
+                                BorderBrush="{TemplateBinding BorderBrush}"
+                                BorderThickness="{TemplateBinding BorderThickness}"
+                                CornerRadius="3">
+                            <ScrollViewer x:Name="PART_ContentHost" 
+                                        Focusable="false" 
+                                        HorizontalScrollBarVisibility="Hidden" 
+                                        VerticalScrollBarVisibility="Hidden"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="border" Property="Background" Value="#FFFFFEEE"/>
+                                <Setter TargetName="border" Property="BorderBrush" Value="#FFDC143C"/>
+                            </Trigger>
+                            <Trigger Property="IsFocused" Value="True">
+                                <Setter TargetName="border" Property="Background" Value="#FFFFDDDD"/>
+                                <Setter TargetName="border" Property="BorderBrush" Value="#FFB22222"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <Style x:Key="LoginLabelStyle" TargetType="Label">
+            <Setter Property="FontFamily" Value="{StaticResource CinzelFont}"/>
+            <Setter Property="FontSize" Value="14"/>
+            <Setter Property="FontWeight" Value="Bold"/>
+            <Setter Property="Foreground" Value="White"/>
+        </Style>
+    </Window.Resources>
+
+    <Grid Background="{StaticResource SpaceBackground}">
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="*"/>
+            <ColumnDefinition Width="400"/>
+        </Grid.ColumnDefinitions>
+
+        <Grid Grid.Column="0">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="*"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="*"/>
+            </Grid.RowDefinitions>
+
+            <TextBlock Grid.Row="1" 
+                      Text="MARTE VIGILA" 
+                      FontFamily="{StaticResource CinzelFont}"
+                      FontSize="36" 
+                      FontWeight="Bold" 
+                      Foreground="White"
+                      HorizontalAlignment="Center"
+                      Margin="0,0,0,0"/>
+
+            <Image Grid.Row="2" 
+                   Source="/Images/warrior-logo.png" 
+                   Width="400" 
+                   Height="400" 
+                   Stretch="Uniform"
+                   HorizontalAlignment="Center" 
+                   VerticalAlignment="Center"/>
+        </Grid>
+
+        <Border Grid.Column="1" 
+                Background="#CC000000" 
+                Margin="20"
+                CornerRadius="10"
+                BorderThickness="2"
+                BorderBrush="#FF8B0000">
+            
+            <StackPanel Margin="30" VerticalAlignment="Center">
+                <TextBlock Text="INICIO" 
+                          FontFamily="{StaticResource CinzelFont}"
+                          FontSize="20" 
+                          FontWeight="Bold" 
+                          Foreground="White"
+                          HorizontalAlignment="Center"
+                          Margin="0,0,0,30"/>
+
+                <Label Content="Usuario:" 
+                       Style="{StaticResource LoginLabelStyle}"
+                       Margin="0,0,0,5"/>
+                
+                <TextBox x:Name="txtUsuario"
+                         Style="{StaticResource LoginTextBoxStyle}"
+                         Height="35"
+                         Margin="0,0,0,20"/>
+
+                <Label Content="Contraseña:" 
+                       Style="{StaticResource LoginLabelStyle}"
+                       Margin="0,0,0,5"/>
+                
+                <PasswordBox x:Name="txtPassword"
+                           Style="{StaticResource LoginPasswordBoxStyle}"
+                           Height="35"
+                           Margin="0,0,0,30"/>
+
+                <Button Content="INGRESAR" 
+                        Style="{StaticResource LoginButtonStyle}"
+                        Height="40"
+                        Click="OnLoginClick"
+                        Margin="0,0,0,20"/>
+
+                <TextBlock x:Name="txtError"
+                          Foreground="Red"
+                          FontFamily="{StaticResource CinzelFont}"
+                          FontSize="12"
+                          HorizontalAlignment="Center"
+                          Visibility="Collapsed"/>
+            </StackPanel>
+        </Border>
+    </Grid>
+</Window>
