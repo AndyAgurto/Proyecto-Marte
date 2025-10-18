@@ -11,6 +11,8 @@
 
 > **Versión 1.3.0** - Instalación Zero-Config • Dashboard en tiempo real • Sistema de Auditoría • Reportes avanzados
 
+> 📖 **[Ver documentación completa →](./README-COMPLETO.md)** (versión extendida con diagramas, código y detalles técnicos)
+
 ---
 
 ## Tabla de Contenidos
@@ -204,6 +206,13 @@ dotnet test --collect:"XPlat Code Coverage"  # Con cobertura
 ## Documentación
 
 ### 📚 Guías Disponibles
+
+**Documentación Principal:**
+- 📘 [`README-COMPLETO.md`](./README-COMPLETO.md) - **Versión extendida con todos los detalles técnicos**
+  - Diagramas de arquitectura y base de datos
+  - Ejemplos de código detallados
+  - Interfaz de usuario con layouts
+  - Funcionalidades con snippets de código
 
 **Para Usuarios Finales:**
 - [`README-INSTALACION.md`](./README-INSTALACION.md) - Instalación paso a paso con troubleshooting
