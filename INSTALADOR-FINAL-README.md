@@ -11,12 +11,7 @@
 
 ## 🔧 Correcciones Aplicadas
 
-### 1. Eliminación de Emojis (Commit: ff9728d)
-- **Problema:** Caracteres emoji causaban errores de parsing en PowerShell
-- **Solución:** Reemplazados con prefijos ASCII profesionales
-  - ✅ → `[OK]`
-  - ❌ → `[ERROR]`
-  - ⚠️ → `[AVISO]`
+### 1. Eliminación de signos (Commit: ff9728d)
 - **Archivos actualizados:**
   - `install-marte.ps1`
   - `uninstall-marte.ps1`
@@ -97,18 +92,6 @@ MARTE-Installer/
 
 ---
 
-## 📊 Historial de Commits
-
-```
-0570c55 - Fix: Eliminar opcion de ejecutar MARTE automaticamente
-aa346e9 - Fix: Agregar Set-Location para garantizar rutas relativas correctas
-ff9728d - Fix: Eliminar emojis de scripts - Formato profesional ASCII
-2905e09 - Agregar archivos .bat para instalación fácil
-85fdf8e - Reemplazar script de paquete: crear-paquete-instalador.ps1
-```
-
----
-
 ## 🔗 GitHub Release
 
 **URL:** https://github.com/AndyAgurto/Proyecto-Marte/releases/tag/v1.3.0
@@ -133,32 +116,13 @@ garantizando compatibilidad total con todos los sistemas Windows.
 
 ### 📥 Descarga e Instalación
 
-1. Descargar `MARTE-Installer-v1.3.0-FINAL.zip`
+1. Descargar `MARTE-Installer-v1.3.0.zip`
 2. Extraer en cualquier carpeta
 3. Click derecho en `INSTALAR-MARTE.bat` → "Ejecutar como administrador"
 ```
 
 ---
 
-## ✨ Mejoras Técnicas
-
-### Antes
-```powershell
-# ❌ Problemas
-Write-Host "✅ Instalación completada"  # Emoji causa error de parsing
-# No cambia directorio, rutas relativas fallan
-$runNow = Read-Host "¿Ejecutar ahora?"  # Error si no es admin
-```
-
-### Después
-```powershell
-# ✅ Soluciones
-Set-Location -Path $PSScriptRoot  # Rutas relativas siempre correctas
-Write-Host "[OK] Instalación completada" -ForegroundColor Green  # ASCII profesional
-Read-Host "Presione ENTER para finalizar"  # Sin ejecución automática
-```
-
----
 
 ## 📝 Archivos Temporales Eliminados
 
@@ -169,7 +133,7 @@ Se limpiaron archivos de desarrollo innecesarios:
 - ❌ `MARTE-Installer-v1.3.0.zip` (versión anterior)
 - ❌ `MARTE-Installer-v1.3.0-CLEAN.zip` (versión intermedia)
 
-Archivo final: ✅ `MARTE-Installer-v1.3.0-FINAL.zip`
+Archivo final: ✅ `MARTE-Installer-v1.3.0.zip`
 
 ---
 
@@ -178,7 +142,6 @@ Archivo final: ✅ `MARTE-Installer-v1.3.0-FINAL.zip`
 El paquete instalador está completamente funcional, probado y listo para distribución. 
 Todos los problemas identificados han sido resueltos:
 
-✅ Sin emojis → Sin errores de parsing  
 ✅ Con Set-Location → Sin problemas de rutas  
 ✅ Sin ejecución auto → Sin errores de permisos  
 ✅ Formato profesional → Compatible universalmente  
