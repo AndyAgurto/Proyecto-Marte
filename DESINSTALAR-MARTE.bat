@@ -5,11 +5,9 @@ REM Este archivo ejecuta el script PowerShell con los permisos necesarios
 REM ========================================
 
 echo.
-echo ╔═══════════════════════════════════════════════════════════╗
-echo ║                                                           ║
-echo ║            DESINSTALADOR DE MARTE v1.3.0                  ║
-echo ║                                                           ║
-echo ╚═══════════════════════════════════════════════════════════╝
+echo ========================================
+echo   DESINSTALADOR DE MARTE v1.3.0
+echo ========================================
 echo.
 echo Iniciando desinstalacion...
 echo.
@@ -19,10 +17,10 @@ powershell.exe -ExecutionPolicy Bypass -NoProfile -File "%~dp0uninstall-marte.ps
 
 if %ERRORLEVEL% EQU 0 (
     echo.
-    echo ✅ Desinstalacion completada
+    echo [OK] Desinstalacion completada
 ) else (
     echo.
-    echo ❌ Error durante la desinstalacion
+    echo [ERROR] Error durante la desinstalacion
     echo Codigo de error: %ERRORLEVEL%
 )
 
