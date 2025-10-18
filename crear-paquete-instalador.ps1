@@ -59,6 +59,21 @@ if (Test-Path ".\uninstall-marte.ps1") {
     Write-Host "  [OK] uninstall-marte.ps1" -ForegroundColor Green
 }
 
+if (Test-Path ".\INSTALAR-MARTE.bat") {
+    Copy-Item -Path ".\INSTALAR-MARTE.bat" -Destination "$OutputPath\" -Force
+    Write-Host "  [OK] INSTALAR-MARTE.bat" -ForegroundColor Green
+}
+
+if (Test-Path ".\DESINSTALAR-MARTE.bat") {
+    Copy-Item -Path ".\DESINSTALAR-MARTE.bat" -Destination "$OutputPath\" -Force
+    Write-Host "  [OK] DESINSTALAR-MARTE.bat" -ForegroundColor Green
+}
+
+if (Test-Path ".\LEEME-PRIMERO.txt") {
+    Copy-Item -Path ".\LEEME-PRIMERO.txt" -Destination "$OutputPath\" -Force
+    Write-Host "  [OK] LEEME-PRIMERO.txt" -ForegroundColor Green
+}
+
 Write-Host ""
 
 # PASO 5: Copiar documentación
