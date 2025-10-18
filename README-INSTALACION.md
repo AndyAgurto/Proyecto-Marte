@@ -16,9 +16,7 @@
 
 ---
 
-## 🚀 Instalación Paso a Paso
-
-### Opción 1: Instalación Automática (RECOMENDADO)
+## 🚀 Instalación Automática
 
 1. **Descargar** el paquete `MARTE-Installer.zip`
 
@@ -34,31 +32,11 @@
 
 7. Al finalizar, encontrará el icono de **MARTE** en su escritorio
 
----
-
-### Opción 2: Instalación Manual
-
-Si la instalación automática falla:
-
-#### Paso A: Instalar .NET 9 Runtime Desktop
-
-1. Descargar desde: https://dotnet.microsoft.com/download/dotnet/9.0
-2. Buscar: **.NET Desktop Runtime 9.0.x** (Windows x64)
-3. Ejecutar el instalador descargado
-4. Seguir las instrucciones en pantalla
-
-#### Paso B: Instalar SQL Server LocalDB
-
-1. Descargar desde: https://aka.ms/sqlexpress
-2. Seleccionar: **Download Media → LocalDB**
-3. Ejecutar `SqlLocalDB.msi`
-4. Aceptar la licencia y completar la instalación
-
-#### Paso C: Copiar archivos de MARTE
-
-1. Crear carpeta: `C:\Program Files\MARTE`
-2. Copiar todos los archivos de la carpeta `Archivos` a `C:\Program Files\MARTE`
-3. Crear acceso directo de `Marte.WPF.exe` en el escritorio
+⚠️ **NOTA**: El instalador se encarga automáticamente de:
+- Instalar .NET 9 Runtime (si no está instalado)
+- Instalar SQL Server LocalDB (si no está instalado)
+- Copiar archivos de aplicación
+- Crear accesos directos
 
 ---
 
@@ -229,11 +207,9 @@ Si experimenta problemas no listados aquí:
 
 ---
 
-## 🗑️ Desinstalación
+## 🗑️ Desinstalación Automática
 
-### Opción 1: Desinstalación Automática (RECOMENDADO)
-
-1. **Descargar** el script `uninstall-marte.ps1` (incluido en el paquete de instalación)
+1. **Localizar** el script `uninstall-marte.ps1` (incluido en el paquete de instalación)
 
 2. **Click derecho** en `uninstall-marte.ps1`
 
@@ -256,121 +232,6 @@ Si experimenta problemas no listados aquí:
 - ✅ Eliminación de accesos directos
 - ✅ Opción de conservar o eliminar datos
 - ✅ Instrucciones para desinstalar LocalDB (si se desea)
-
----
-
-### Opción 2: Desinstalación Manual
-
-Si el script automático falla o prefiere hacerlo manualmente:
-
-#### Paso A: Crear Backup (Opcional pero Recomendado)
-
-1. **Abrir** el Explorador de Windows
-
-2. **Pegar** en la barra de direcciones:
-   ```
-   %LocalAppData%\MARTE\Data
-   ```
-
-3. **Copiar** toda la carpeta `Data` a un lugar seguro (ej: Escritorio, USB)
-
-4. **Renombrar** la copia como `MARTE_Backup_AAAAMMDD`
-
----
-
-#### Paso B: Cerrar MARTE
-
-1. Si MARTE está abierto, **cerrarlo completamente**
-
-2. Verificar en el **Administrador de Tareas** que no hay procesos de MARTE
-
----
-
-#### Paso C: Eliminar Archivos de Aplicación
-
-1. **Abrir** el Explorador de Windows
-
-2. **Navegar** a:
-   ```
-   C:\Program Files\MARTE
-   ```
-
-3. **Eliminar** toda la carpeta `MARTE`
-
----
-
-#### Paso D: Eliminar Accesos Directos
-
-1. **Eliminar** el acceso directo del escritorio:
-   - Buscar `MARTE.lnk` en el escritorio
-   - Click derecho → Eliminar
-
-2. **Eliminar** del menú inicio:
-   - Presionar tecla Windows
-   - Buscar "MARTE"
-   - Click derecho → Desanclar de Inicio
-   - Click derecho → Desinstalar (si aparece la opción)
-
----
-
-#### Paso E: Eliminar Datos de Aplicación (Opcional)
-
-⚠️ **ADVERTENCIA**: Este paso eliminará permanentemente:
-- Todos los asistentes registrados
-- Historial completo de asistencias
-- Usuarios y configuraciones
-- Base de datos completa
-
-**Solo realice este paso si**:
-- Ya creó un backup
-- No necesita conservar los datos
-- Desea una desinstalación completa
-
-**Pasos**:
-
-1. Presionar **Win + R**
-
-2. Escribir:
-   ```
-   %LocalAppData%
-   ```
-
-3. Presionar **Enter**
-
-4. Buscar y **eliminar** la carpeta `MARTE`
-
----
-
-#### Paso F: Desinstalar SQL Server LocalDB (Opcional)
-
-⚠️ **IMPORTANTE**: Solo desinstalar LocalDB si:
-- No lo usa ninguna otra aplicación
-- Está completamente seguro
-- No planea reinstalar MARTE
-
-**Pasos**:
-
-1. **Abrir** Panel de Control
-
-2. Ir a **Programas y características**
-
-3. Buscar **"Microsoft SQL Server LocalDB"**
-
-4. Click derecho → **Desinstalar**
-
-5. Seguir el asistente de desinstalación
-
----
-
-### Verificación de Desinstalación Completa
-
-Después de desinstalar, verifique que se eliminaron:
-
-- [ ] Carpeta: `C:\Program Files\MARTE` (NO debe existir)
-- [ ] Acceso directo en Escritorio: `MARTE.lnk` (NO debe existir)
-- [ ] Acceso directo en Menú Inicio (NO debe aparecer al buscar "MARTE")
-- [ ] Datos de aplicación: `%LocalAppData%\MARTE` (Opcional - puede conservarse)
-- [ ] SQL Server LocalDB (Opcional - puede conservarse)
 
 ---
 
@@ -413,10 +274,6 @@ Si tiene un backup y desea restaurarlo:
 
 ## 🔄 Actualización
 
----
-
-## 🔄 Actualización
-
 ### Actualizar a una Nueva Versión
 
 Para actualizar MARTE a una versión más reciente:
@@ -440,9 +297,7 @@ Antes de actualizar, siempre crear un backup:
 
 ---
 
-#### Paso 3: Actualización Automática (RECOMENDADO)
-
-**Opción A: Sobrescribir instalación existente**
+#### Paso 3: Actualización Automática
 
 1. Descargar el nuevo paquete `MARTE-Installer-vX.X.X.zip`
 2. Descomprimir en una carpeta temporal
@@ -459,19 +314,6 @@ Antes de actualizar, siempre crear un backup:
 - ✅ Base de datos se conserva
 - ✅ Configuraciones se mantienen
 - ✅ No requiere desinstalar primero
-
----
-
-**Opción B: Actualización manual**
-
-1. Descargar el nuevo paquete `MARTE-Installer-vX.X.X.zip`
-2. Descomprimir
-3. Navegar a `C:\Program Files\MARTE`
-4. **Backup**: Copiar toda la carpeta a un lugar seguro
-5. **Eliminar** el contenido de `C:\Program Files\MARTE` (excepto archivos de configuración si desea conservarlos)
-6. **Copiar** los nuevos archivos de `MARTE-Installer\Archivos` a `C:\Program Files\MARTE`
-7. Ejecutar MARTE
-8. La base de datos se mantiene automáticamente
 
 ---
 
@@ -516,21 +358,9 @@ Si algo no funciona:
 
 Si después de actualizar MARTE presenta problemas:
 
-#### Opción 1: Restaurar desde Backup de Aplicación
+#### Restaurar Base de Datos desde Backup
 
 1. Cerrar MARTE completamente
-2. Navegar a `C:\Program Files\MARTE`
-3. Eliminar todo el contenido
-4. Copiar los archivos de la versión anterior (del backup)
-5. Ejecutar MARTE
-
----
-
-#### Opción 2: Restaurar Base de Datos
-
-Si solo hay problemas con la base de datos:
-
-1. Cerrar MARTE
 2. Presionar **Win + R** → `%LocalAppData%\MARTE\Data`
 3. Eliminar:
    - `MarteDb.mdf`
@@ -542,11 +372,11 @@ Si solo hay problemas con la base de datos:
 
 ---
 
-#### Opción 3: Desinstalar y Reinstalar Versión Anterior
+#### Reinstalar Versión Anterior
 
-1. Ejecutar `uninstall-marte.ps1` (con backup)
+1. Ejecutar `uninstall-marte.ps1` (con opción de backup)
 2. Instalar la versión anterior con `install-marte.ps1`
-3. Restaurar base de datos desde backup
+3. Restaurar base de datos desde backup (si es necesario)
 
 ---
 
@@ -624,7 +454,7 @@ Para descargar versiones de MARTE:
 
 ## 📄 Licencia
 
-Este software es propiedad de [Nombre de la Organización].  
+Este software es propiedad de AU Developers (MVP).  
 Todos los derechos reservados.
 
 ---
