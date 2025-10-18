@@ -4,6 +4,9 @@
 # Fecha: Octubre 2025
 # ========================================
 
+# Cambiar al directorio del script para rutas relativas
+Set-Location -Path $PSScriptRoot
+
 # Configuracion
 $ErrorActionPreference = "Stop"
 $AppName = "MARTE"
