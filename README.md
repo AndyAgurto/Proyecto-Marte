@@ -100,12 +100,8 @@ MARTE/
 3. Iniciar MARTE (acceso directo en Desktop)
 4. Login por defecto: `druagurto` / `@Druagurto00`
 
-**El instalador automáticamente:**
-- ✅ Instala .NET 9 Runtime + SQL LocalDB
-- ✅ Crea base de datos en `%LocalAppData%\MARTE\Data\`
-- ✅ Configura accesos directos
 
-📖 **Guía completa**: [`README-INSTALACION.md`](./README-INSTALACION.md)
+📖 **Guía completa**: [`INSTALADOR-FINAL-README.md`](./INSTALADOR-FINAL-README.md)
 
 ### Para Desarrolladores
 
@@ -215,12 +211,11 @@ dotnet test --collect:"XPlat Code Coverage"  # Con cobertura
   - Funcionalidades con snippets de código
 
 **Para Usuarios Finales:**
-- [`README-INSTALACION.md`](./README-INSTALACION.md) - Instalación paso a paso con troubleshooting
+- [`INSTALADOR-FINAL-README.md`](./INSTALADOR-FINAL-README.md) - Instalación paso a paso con troubleshooting
 - [`GUIA_USUARIO_MARTE.md`](./GUIA_USUARIO_MARTE.md) - Manual de usuario completo con capturas
 
 **Para Desarrolladores:**
 - [`DOCUMENTACION_TECNICA_GENERAL.md`](./DOCUMENTACION_TECNICA_GENERAL.md) - Arquitectura completa del sistema
-- [`CONEXIONES.md`](./CONEXIONES.md) - SQL Server (Desarrollo)
 - [`CONEXIONES-LOCALDB.md`](./CONEXIONES-LOCALDB.md) - LocalDB (Producción)
 - [`DOCUMENTACION_TESTS.md`](./DOCUMENTACION_TESTS.md) - Suite de pruebas automatizadas
 
