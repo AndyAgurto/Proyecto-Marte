@@ -13,12 +13,14 @@ y este proyecto adhiere a [Semantic Versioning](https://semver.org/lang/es/).
 
 ### Agregado
 - **Instalación Automática Completa**
-  - Script `install-marte.ps1` con detección de dependencias
-  - Script `uninstall-marte.ps1` con opción de backup
-  - Script `crear-paquete-distribucion.ps1` para empaquetado
+  - Script `install-marte.ps1` con detección de dependencias (versión FINAL sin emojis)
+  - Script `uninstall-marte.ps1` con opción de backup (versión FINAL sin emojis)
+  - Script `crear-paquete-instalador.ps1` para empaquetado
+  - Wrappers BAT (`INSTALAR-MARTE.bat`, `DESINSTALAR-MARTE.bat`) con ExecutionPolicy Bypass
   - Instalación automática de .NET 9 Runtime
   - Instalación automática de SQL Server LocalDB
   - Creación de accesos directos en Desktop y Menú Inicio
+  - Detección automática de ruta con `$PSScriptRoot`
 
 - **SQL Server LocalDB Embebido**
   - Base de datos portable en `%LocalAppData%\MARTE\Data\`
@@ -42,7 +44,7 @@ y este proyecto adhiere a [Semantic Versioning](https://semver.org/lang/es/).
   - Mensaje con credenciales por defecto
 
 - **Documentación**
-  - `README-INSTALACION.md` - Guía completa de instalación
+  - `INSTALADOR-FINAL-README.md` - Guía completa del instalador final
   - `README-COMPLETO.md` - Documentación técnica extendida (1,652 líneas)
   - `CONEXIONES-LOCALDB.md` - Guía técnica de LocalDB
   - `RELEASE-NOTES-v1.3.0.md` - Notas detalladas de la versión
@@ -59,6 +61,16 @@ y este proyecto adhiere a [Semantic Versioning](https://semver.org/lang/es/).
 - Experiencia de usuario para instalación sin conocimientos técnicos
 - Separación clara entre entornos desarrollo/producción
 - Documentación más organizada y accesible
+
+### Corregido
+- **Errores de parsing en PowerShell**: Emojis Unicode causaban "Falta la cadena en el terminador"
+  - Solución: Formato profesional ASCII con prefijos `[OK]`, `[ERROR]`, `[AVISO]`
+- **Error "No se encontraron archivos de aplicacion"**: Working directory incorrecto
+  - Solución: Agregado `Set-Location -Path $PSScriptRoot` en scripts
+- **Auto-ejecución fallaba sin permisos**: Intentaba ejecutar MARTE causando confusión
+  - Solución: Eliminada opción de ejecutar automáticamente después de instalación
+- **Políticas de ejecución bloqueaban scripts**: PowerShell restrictivo
+  - Solución: Wrappers BAT con `-ExecutionPolicy Bypass`
 
 ### Técnico
 - Compilación condicional `#if DEBUG` / `#else` para entornos
