@@ -356,6 +356,15 @@ namespace Marte.WPF.Views
             txtFechaHora.Text = DateTime.Now.ToString("dd/MM/yyyy HH:mm:ss");
         }
 
+        private void OnAboutClick(object sender, RoutedEventArgs e)
+        {
+            var aboutWindow = new AboutWindow
+            {
+                Owner = this
+            };
+            aboutWindow.ShowDialog();
+        }
+
         private async void OnLogoutClick(object sender, RoutedEventArgs e)
         {
             var resultado = MessageBox.Show("¿Está seguro que desea cerrar sesión?", 

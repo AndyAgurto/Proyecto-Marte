@@ -151,6 +151,7 @@ namespace Marte.WPF
             services.AddTransient<AsistenciaControlView>();
             services.AddTransient<ReportesView>();
             services.AddTransient<AuditLogView>();
+            services.AddTransient<AboutWindow>();
 
             // Registrar ReporteRepository y ReporteService
             services.AddScoped<IReporteRepository, ReporteRepository>();

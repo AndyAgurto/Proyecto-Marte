@@ -1,0 +1,207 @@
+<Window x:Class="Marte.WPF.Views.AboutWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="Acerca de MARTE" 
+        Height="600" 
+        Width="500"
+        WindowStartupLocation="CenterScreen"
+        ResizeMode="NoResize"
+        WindowStyle="SingleBorderWindow"
+        Background="#1E1E1E"
+        Icon="/Images/Marte-Ico.ico">
+
+    <Window.Resources>
+        <FontFamily x:Key="CinzelFont">Times New Roman</FontFamily>
+        
+        <Style x:Key="TitleStyle" TargetType="TextBlock">
+            <Setter Property="FontFamily" Value="{StaticResource CinzelFont}"/>
+            <Setter Property="FontSize" Value="28"/>
+            <Setter Property="FontWeight" Value="Bold"/>
+            <Setter Property="Foreground" Value="#8B0000"/>
+            <Setter Property="HorizontalAlignment" Value="Center"/>
+        </Style>
+        
+        <Style x:Key="SubtitleStyle" TargetType="TextBlock">
+            <Setter Property="FontFamily" Value="{StaticResource CinzelFont}"/>
+            <Setter Property="FontSize" Value="16"/>
+            <Setter Property="Foreground" Value="#FFD700"/>
+            <Setter Property="HorizontalAlignment" Value="Center"/>
+            <Setter Property="Margin" Value="0,5,0,0"/>
+        </Style>
+        
+        <Style x:Key="LabelStyle" TargetType="TextBlock">
+            <Setter Property="FontFamily" Value="{StaticResource CinzelFont}"/>
+            <Setter Property="FontSize" Value="14"/>
+            <Setter Property="FontWeight" Value="Bold"/>
+            <Setter Property="Foreground" Value="#8B0000"/>
+        </Style>
+        
+        <Style x:Key="ValueStyle" TargetType="TextBlock">
+            <Setter Property="FontFamily" Value="Segoe UI"/>
+            <Setter Property="FontSize" Value="13"/>
+            <Setter Property="Foreground" Value="White"/>
+            <Setter Property="Margin" Value="0,2,0,10"/>
+        </Style>
+        
+        <Style x:Key="CloseButtonStyle" TargetType="Button">
+            <Setter Property="Background" Value="#8B0000"/>
+            <Setter Property="Foreground" Value="White"/>
+            <Setter Property="FontFamily" Value="{StaticResource CinzelFont}"/>
+            <Setter Property="FontSize" Value="14"/>
+            <Setter Property="FontWeight" Value="Bold"/>
+            <Setter Property="Padding" Value="30,10"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border Background="{TemplateBinding Background}"
+                                BorderBrush="#654321"
+                                BorderThickness="2"
+                                CornerRadius="8">
+                            <ContentPresenter HorizontalAlignment="Center" 
+                                            VerticalAlignment="Center"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter Property="Background" Value="#A52A2A"/>
+                            </Trigger>
+                            <Trigger Property="IsPressed" Value="True">
+                                <Setter Property="Background" Value="#600000"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+    </Window.Resources>
+
+    <Grid Margin="30">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+
+        <!-- Header con logo y título -->
+        <StackPanel Grid.Row="0" Margin="0,0,0,20">
+            <!-- Logo (si existe) -->
+            <Image Source="/Images/Marte-Ico.ico" 
+                   Width="80" 
+                   Height="80" 
+                   Margin="0,0,0,15"/>
+            
+            <TextBlock Text="PROYECTO MARTE" 
+                       Style="{StaticResource TitleStyle}"/>
+            
+            <TextBlock Text="Sistema de Gestión de Asistencias" 
+                       Style="{StaticResource SubtitleStyle}"/>
+            
+            <Border Height="2" 
+                    Background="#8B0000" 
+                    Margin="0,20,0,0"
+                    Opacity="0.5"/>
+        </StackPanel>
+
+        <!-- Información del sistema -->
+        <ScrollViewer Grid.Row="1" 
+                     VerticalScrollBarVisibility="Auto"
+                     Margin="0,10,0,10">
+            <StackPanel>
+                <!-- Versión -->
+                <TextBlock Text="Versión" Style="{StaticResource LabelStyle}"/>
+                <TextBlock Text="1.3.0" Style="{StaticResource ValueStyle}"/>
+
+                <!-- Fecha de Lanzamiento -->
+                <TextBlock Text="Fecha de Lanzamiento" Style="{StaticResource LabelStyle}"/>
+                <TextBlock Text="Octubre 2025" Style="{StaticResource ValueStyle}"/>
+
+                <!-- Desarrollador -->
+                <TextBlock Text="Desarrollador" Style="{StaticResource LabelStyle}"/>
+                <TextBlock Style="{StaticResource ValueStyle}">
+                    <Run Text="Andy Agurto Urcia"/>
+                    <LineBreak/>
+                    <Run Text="Ingeniero de Sistemas" FontStyle="Italic" FontSize="11" Foreground="#CCCCCC"/>
+                </TextBlock>
+
+                <!-- Organización -->
+                <TextBlock Text="Organización" Style="{StaticResource LabelStyle}"/>
+                <TextBlock Text="AU Developers (MVP)" Style="{StaticResource ValueStyle}"/>
+
+                <!-- Email -->
+                <TextBlock Text="Contacto" Style="{StaticResource LabelStyle}"/>
+                <TextBlock Style="{StaticResource ValueStyle}">
+                    <Run Text="📧 "/>
+                    <Hyperlink NavigateUri="mailto:druagurto@hotmail.com" 
+                              RequestNavigate="Hyperlink_RequestNavigate"
+                              Foreground="#4A9EFF"
+                              TextDecorations="None">
+                        <Run Text="druagurto@hotmail.com"/>
+                    </Hyperlink>
+                </TextBlock>
+
+                <!-- GitHub -->
+                <TextBlock Text="Repositorio" Style="{StaticResource LabelStyle}"/>
+                <TextBlock Style="{StaticResource ValueStyle}">
+                    <Run Text="🔗 "/>
+                    <Hyperlink NavigateUri="https://github.com/AndyAgurto/Proyecto-Marte" 
+                              RequestNavigate="Hyperlink_RequestNavigate"
+                              Foreground="#4A9EFF"
+                              TextDecorations="None">
+                        <Run Text="github.com/AndyAgurto/Proyecto-Marte"/>
+                    </Hyperlink>
+                </TextBlock>
+
+                <!-- Separador -->
+                <Border Height="1" 
+                        Background="#3F3F46" 
+                        Margin="0,10,0,15"/>
+
+                <!-- Tecnologías -->
+                <TextBlock Text="Tecnologías" Style="{StaticResource LabelStyle}"/>
+                <TextBlock Style="{StaticResource ValueStyle}">
+                    <Run Text="• Framework: .NET 9.0"/>
+                    <LineBreak/>
+                    <Run Text="• UI: WPF (Windows Presentation Foundation)"/>
+                    <LineBreak/>
+                    <Run Text="• Base de Datos: SQL Server LocalDB 2022"/>
+                    <LineBreak/>
+                    <Run Text="• ORM: Entity Framework Core 9.0.10"/>
+                    <LineBreak/>
+                    <Run Text="• Arquitectura: Clean Architecture (4 capas)"/>
+                    <LineBreak/>
+                    <Run Text="• Seguridad: BCrypt.Net-Next 4.0.3"/>
+                </TextBlock>
+
+                <!-- Separador -->
+                <Border Height="1" 
+                        Background="#3F3F46" 
+                        Margin="0,10,0,15"/>
+
+                <!-- Cliente -->
+                <TextBlock Text="Cliente" Style="{StaticResource LabelStyle}"/>
+                <TextBlock Text="Nueva Acrópolis" Style="{StaticResource ValueStyle}"/>
+
+                <!-- Licencia -->
+                <TextBlock Text="Licencia" Style="{StaticResource LabelStyle}"/>
+                <TextBlock Style="{StaticResource ValueStyle}">
+                    <Run Text="MIT License"/>
+                    <LineBreak/>
+                    <Run Text="© 2025 Andy Agurto - Todos los derechos reservados" FontSize="11" Foreground="#CCCCCC"/>
+                </TextBlock>
+            </StackPanel>
+        </ScrollViewer>
+
+        <!-- Footer con botón cerrar -->
+        <StackPanel Grid.Row="2" Margin="0,10,0,0">
+            <Border Height="2" 
+                    Background="#8B0000" 
+                    Margin="0,0,0,15"
+                    Opacity="0.5"/>
+            
+            <Button Content="CERRAR" 
+                    Style="{StaticResource CloseButtonStyle}"
+                    Click="CloseButton_Click"
+                    HorizontalAlignment="Center"/>
+        </StackPanel>
+    </Grid>
+</Window>
