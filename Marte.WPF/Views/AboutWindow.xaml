@@ -2,11 +2,11 @@
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         Title="Acerca de MARTE" 
-        Height="600" 
-        Width="500"
-        WindowStartupLocation="CenterScreen"
-        ResizeMode="NoResize"
-        WindowStyle="SingleBorderWindow"
+    Height="700"
+    Width="1200"
+    WindowStartupLocation="CenterScreen"
+    ResizeMode="NoResize"
+    WindowStyle="SingleBorderWindow"
         Background="#1E1E1E"
         Icon="/Images/Marte-Ico.ico">
 

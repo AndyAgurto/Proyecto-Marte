@@ -69,27 +69,31 @@ if (Test-Path ".\DESINSTALAR-MARTE.bat") {
     Write-Host "  [OK] DESINSTALAR-MARTE.bat" -ForegroundColor Green
 }
 
-if (Test-Path ".\LEEME-PRIMERO.txt") {
-    Copy-Item -Path ".\LEEME-PRIMERO.txt" -Destination "$OutputPath\" -Force
-    Write-Host "  [OK] LEEME-PRIMERO.txt" -ForegroundColor Green
-}
 
 Write-Host ""
 
-# PASO 5: Copiar documentación
-Write-Host "PASO 5: Copiando documentacion..." -ForegroundColor Yellow
 
+# PASO 5: Copiar documentación seleccionada (.md y VERSION.txt)
+Write-Host "PASO 5: Copiando archivos de documentación seleccionados..." -ForegroundColor Yellow
+
+# Copiar solo los archivos especificados
 $docs = @(
-    "README-INSTALACION.md",
-    "VERSION.txt",
-    "RELEASE-NOTES-v1.3.0.md"
+    "GUIA_USUARIO_MARTE.md",
+    "INSTALADOR-FINAL-README.md"
 )
-
 foreach ($doc in $docs) {
     if (Test-Path ".\$doc") {
-        Copy-Item -Path ".\$doc" -Destination "$OutputPath\" -Force
+        Copy-Item -Path ".\$doc" -Destination $OutputPath -Force
         Write-Host "  [OK] $doc" -ForegroundColor Green
+    } else {
+        Write-Host "  [NO ENCONTRADO] $doc" -ForegroundColor Yellow
     }
+}
+
+# Copiar VERSION.txt si existe
+if (Test-Path ".\VERSION.txt") {
+    Copy-Item -Path ".\VERSION.txt" -Destination $OutputPath -Force
+    Write-Host "  [OK] VERSION.txt" -ForegroundColor Green
 }
 
 Write-Host ""
@@ -122,15 +126,11 @@ CONTENIDO DEL PAQUETE:
 - Archivos/: Aplicacion compilada
 - install-marte.ps1: Script de instalacion
 - uninstall-marte.ps1: Script de desinstalacion
-- README-INSTALACION.md: Guia de usuario
+- INSTALADOR-FINAL-README.md: Guia de usuario
+- Guia_USUARIO_MARTE.md: Guia de usuario
 - VERSION.txt: Este archivo
 
-INSTALACION RAPIDA:
-1. Click derecho en install-marte.ps1
-2. Ejecutar como administrador
-3. Seguir las instrucciones en pantalla
-
-Para mas informacion, consulte README-INSTALACION.md
+Para mas informacion, consulte INSTALADOR-FINAL-README.md
 "@
 
 $versionContent | Out-File -FilePath "$OutputPath\VERSION.txt" -Encoding UTF8 -Force
@@ -162,8 +162,3 @@ Write-Host ""
 Write-Host "PROXIMOS PASOS:" -ForegroundColor Cyan
 Write-Host "1. Comprimir la carpeta a ZIP:" -ForegroundColor White
 Write-Host "   Compress-Archive -Path '$OutputPath\*' -DestinationPath 'MARTE-Installer-v1.3.0.zip'" -ForegroundColor Yellow
-Write-Host ""
-Write-Host "2. Subir el ZIP a GitHub Release:" -ForegroundColor White
-Write-Host "   https://github.com/AndyAgurto/Proyecto-Marte/releases/tag/v1.3.0" -ForegroundColor Yellow
-Write-Host ""
-Write-Host "[EXITO] Paquete de distribucion listo!" -ForegroundColor Green

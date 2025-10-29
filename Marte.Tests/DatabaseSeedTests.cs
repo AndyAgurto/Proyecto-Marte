@@ -69,7 +69,7 @@ namespace Marte.Tests
                     "Secretarios",
                     "GG.FF",
                     "GG.MM",
-                    "Guardia de Seguridad",
+                    "Grupo de Seguridad",
                     "Miembros",
                     "Filosofía",
                     "Visitas",
@@ -111,7 +111,7 @@ namespace Marte.Tests
                 Assert.Contains(categorias, c => c.Nombre == "Secretarios");
                 Assert.Contains(categorias, c => c.Nombre == "GG.FF");
                 Assert.Contains(categorias, c => c.Nombre == "GG.MM");
-                Assert.Contains(categorias, c => c.Nombre == "Guardia de Seguridad");
+                Assert.Contains(categorias, c => c.Nombre == "Grupo de Seguridad");
                 Assert.Contains(categorias, c => c.Nombre == "Miembros");
                 Assert.Contains(categorias, c => c.Nombre == "Filosofía");
                 Assert.Contains(categorias, c => c.Nombre == "Visitas");

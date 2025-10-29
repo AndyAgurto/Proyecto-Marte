@@ -296,7 +296,7 @@
                                                             <DataGridTextColumn Header="DNI" Binding="{Binding DNI}" Width="100"/>
                                                             <DataGridTextColumn Header="Nombre Completo" Binding="{Binding NombreCompleto}" Width="250"/>
                                                             <DataGridTextColumn Header="Categoría" Binding="{Binding Categoria}" Width="120"/>
-                                                            <DataGridTextColumn Header="Grupo" Binding="{Binding NumeroGrupo, TargetNullValue='-'}" Width="80"/>
+                                                            <DataGridTextColumn Header="N°" Binding="{Binding NumeroGrupo, TargetNullValue='-'}" Width="80"/>
                                                             <DataGridTextColumn Header="Hora Ingreso" Binding="{Binding HoraIngreso, StringFormat='hh\\:mm'}" Width="110"/>
                                                             <DataGridTextColumn Header="Hora Salida" Width="110">
                                                                 <DataGridTextColumn.Binding>
@@ -386,7 +386,7 @@
                                          RowStyle="{StaticResource DataGridRowStyle}">
                                     <DataGrid.Columns>
                                         <DataGridTextColumn Header="Categoría" Binding="{Binding Categoria}" Width="*"/>
-                                        <DataGridTextColumn Header="Grupo" Binding="{Binding NumeroGrupo}" Width="100"/>
+                                        <DataGridTextColumn Header="N°" Binding="{Binding NumeroGrupo}" Width="100"/>
                                         <DataGridTextColumn Header="Total" Binding="{Binding Total}" Width="100"/>
                                         <DataGridTextColumn Header="Hasta Cierre" Binding="{Binding HastaCierre}" Width="120"/>
                                     </DataGrid.Columns>
@@ -412,7 +412,7 @@
                                     <RowDefinition Height="200"/>
                                 </Grid.RowDefinitions>
 
-                                <TextBlock Grid.Row="0" Text="POR GRUPO (MIEMBROS)" FontSize="16" FontWeight="Bold" Foreground="White" Margin="0,0,0,10"/>
+                                <TextBlock Grid.Row="0" Text="POR NÚMERO DE GRUPO (MIEMBROS)" FontSize="16" FontWeight="Bold" Foreground="White" Margin="0,0,0,10"/>
 
                                 <Button Grid.Row="1" Content="Consultar" Command="{Binding ConsultarPorGrupoCommand}" Style="{StaticResource ActionButtonStyle}" HorizontalAlignment="Left" Margin="0,0,0,10"/>
 
@@ -428,7 +428,7 @@
                                          IsReadOnly="True"
                                          RowStyle="{StaticResource DataGridRowStyle}">
                                     <DataGrid.Columns>
-                                        <DataGridTextColumn Header="Grupo" Binding="{Binding NumeroGrupo}" Width="100"/>
+                                        <DataGridTextColumn Header="N°" Binding="{Binding NumeroGrupo}" Width="100"/>
                                         <DataGridTextColumn Header="Total Asistencias" Binding="{Binding TotalAsistencias}" Width="*"/>
                                         <DataGridTextColumn Header="Promedio" Binding="{Binding Promedio, StringFormat='{}{0:F2}'}" Width="*"/>
                                     </DataGrid.Columns>
@@ -651,7 +651,7 @@
                                          IsReadOnly="True"
                                          RowStyle="{StaticResource DataGridRowStyle}">
                                     <DataGrid.Columns>
-                                        <DataGridTextColumn Header="Grupo" Binding="{Binding NumeroGrupo}" Width="80"/>
+                                        <DataGridTextColumn Header="N°" Binding="{Binding NumeroGrupo}" Width="80"/>
                                         <DataGridTextColumn Header="Fecha" Binding="{Binding Fecha, StringFormat='dd/MM/yyyy'}" Width="100"/>
                                         <DataGridTextColumn Header="Total Miembros" Binding="{Binding TotalMiembrosGrupo}" Width="120"/>
                                         <DataGridTextColumn Header="Asistieron" Binding="{Binding AsistentesDelGrupo}" Width="100"/>
@@ -745,7 +745,7 @@
                                         <DataGridTextColumn Header="DNI" Binding="{Binding DNI}" Width="90"/>
                                         <DataGridTextColumn Header="Nombre Completo" Binding="{Binding NombreCompleto}" Width="*"/>
                                         <DataGridTextColumn Header="Categoría" Binding="{Binding Categoria}" Width="100"/>
-                                        <DataGridTextColumn Header="Grupo" Binding="{Binding NumeroGrupo}" Width="70"/>
+                                        <DataGridTextColumn Header="N°" Binding="{Binding NumeroGrupo}" Width="70"/>
                                         <DataGridTextColumn Header="Total Asist." Binding="{Binding TotalAsistencias}" Width="100"/>
                                         <DataGridTextColumn Header="% Asist." Binding="{Binding PorcentajeAsistencia, StringFormat='{}{0}%'}" Width="90"/>
                                     </DataGrid.Columns>

@@ -5,9 +5,9 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         mc:Ignorable="d"
         Title="Control de Asistencia - MARTE"
-        Height="800" 
-        Width="1500"
-        WindowStartupLocation="CenterScreen"
+    Height="700"
+    Width="1200"
+    WindowStartupLocation="CenterScreen"
         Background="#1E1E1E"
         Icon="/Images/Marte-Ico.ico">
 

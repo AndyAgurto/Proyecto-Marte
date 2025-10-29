@@ -2,9 +2,9 @@
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         Title="Bitácora de Auditoría - MARTE" 
-        Height="750" 
-        Width="1400"
-        WindowStartupLocation="CenterScreen"
+    Height="700"
+    Width="1200"
+    WindowStartupLocation="CenterScreen"
         Background="#1E1E1E"
         Icon="/Images/Marte-Ico.ico">
 

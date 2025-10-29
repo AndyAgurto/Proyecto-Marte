@@ -9,6 +9,15 @@
         Icon="/Images/Marte-Ico.ico">
     
     <Window.Resources>
+        <!-- Estilo global para ComboBox -->
+        <Style TargetType="ComboBox">
+            <Setter Property="Background" Value="White"/>
+            <Setter Property="Foreground" Value="Black"/>
+            <Setter Property="BorderBrush" Value="#8B0000"/>
+            <Setter Property="Padding" Value="8"/>
+            <Setter Property="FontSize" Value="13"/>
+            <Setter Property="FontFamily" Value="{StaticResource CinzelFont}"/>
+        </Style>
         <!-- Fuente Cinzel (usando Times New Roman como fallback) -->
         <FontFamily x:Key="CinzelFont">Times New Roman</FontFamily>
         
@@ -682,12 +691,7 @@
                                           Foreground="White"
                                           Margin="0,0,0,5"/>
                                 <ComboBox x:Name="cmbCategoria"
-                                         FontFamily="{StaticResource CinzelFont}"
-                                         FontSize="14"
                                          Height="35"
-                                         Background="#1A1A1A"
-                                         Foreground="White"
-                                         BorderBrush="#8B0000"
                                          BorderThickness="2"
                                          SelectionChanged="OnCategoriaChanged">
                                     <ComboBox.Resources>
@@ -696,17 +700,17 @@
                                     </ComboBox.Resources>
                                     <ComboBox.ItemContainerStyle>
                                         <Style TargetType="ComboBoxItem">
-                                            <Setter Property="Background" Value="#1A1A1A"/>
-                                            <Setter Property="Foreground" Value="White"/>
+                                            <Setter Property="Background" Value="white"/>
+                                            <Setter Property="Foreground" Value="#1A1A1A"/>
                                             <Setter Property="FontFamily" Value="{StaticResource CinzelFont}"/>
                                             <Style.Triggers>
                                                 <Trigger Property="IsMouseOver" Value="True">
-                                                    <Setter Property="Background" Value="#8B0000"/>
-                                                    <Setter Property="Foreground" Value="White"/>
+                                                    <Setter Property="Background" Value="White"/>
+                                                    <Setter Property="Foreground" Value="#1A1A1A"/>
                                                 </Trigger>
                                                 <Trigger Property="IsSelected" Value="True">
-                                                    <Setter Property="Background" Value="#8B0000"/>
-                                                    <Setter Property="Foreground" Value="White"/>
+                                                    <Setter Property="Background" Value="White"/>
+                                                    <Setter Property="Foreground" Value="#1A1A1A"/>
                                                 </Trigger>
                                             </Style.Triggers>
                                         </Style>
@@ -722,12 +726,7 @@
                                           Foreground="White"
                                           Margin="0,0,0,5"/>
                                 <ComboBox x:Name="cmbGrupo"
-                                         FontFamily="{StaticResource CinzelFont}"
-                                         FontSize="14"
                                          Height="35"
-                                         Background="#1A1A1A"
-                                         Foreground="White"
-                                         BorderBrush="#8B0000"
                                          BorderThickness="2"
                                          SelectionChanged="OnGrupoChanged">
                                     <ComboBox.Resources>
@@ -736,17 +735,17 @@
                                     </ComboBox.Resources>
                                     <ComboBox.ItemContainerStyle>
                                         <Style TargetType="ComboBoxItem">
-                                            <Setter Property="Background" Value="#1A1A1A"/>
-                                            <Setter Property="Foreground" Value="White"/>
+                                            <Setter Property="Background" Value="White"/>
+                                            <Setter Property="Foreground" Value="#8B0000"/>
                                             <Setter Property="FontFamily" Value="{StaticResource CinzelFont}"/>
                                             <Style.Triggers>
                                                 <Trigger Property="IsMouseOver" Value="True">
-                                                    <Setter Property="Background" Value="#8B0000"/>
-                                                    <Setter Property="Foreground" Value="White"/>
+                                                    <Setter Property="Background" Value="White"/>
+                                                    <Setter Property="Foreground" Value="#8B0000"/>
                                                 </Trigger>
                                                 <Trigger Property="IsSelected" Value="True">
-                                                    <Setter Property="Background" Value="#8B0000"/>
-                                                    <Setter Property="Foreground" Value="White"/>
+                                                    <Setter Property="Background" Value="White"/>
+                                                    <Setter Property="Foreground" Value="#8B0000"/>
                                                 </Trigger>
                                             </Style.Triggers>
                                         </Style>

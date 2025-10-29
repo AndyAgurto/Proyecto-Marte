@@ -385,12 +385,8 @@ namespace Marte.WPF.Views
 
                 await _sessionService.SignOutAsync();
                 
-                // Abrir ventana de login
-                var loginWindow = ((App)System.Windows.Application.Current).ServiceProvider.GetRequiredService<LoginWindow>();
-                loginWindow.Show();
-                
-                // Cerrar ventana principal
-                this.Close();
+                // Cerrar toda la aplicación (incluye ventanas secundarias)
+                System.Windows.Application.Current.Shutdown();
             }
         }
 
