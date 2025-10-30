@@ -216,33 +216,50 @@ Write-Host ""
 # ========================================
 # PASO 5: Eliminar datos de aplicacion (opcional)
 # ========================================
+
 Write-Host "========================================" -ForegroundColor DarkGray
-Write-Host "PASO 5: Eliminando datos de aplicacion..." -ForegroundColor Cyan
+Write-Host "PASO 5: Eliminando datos de aplicacion (incluye base de datos)..." -ForegroundColor Cyan
 Write-Host "========================================" -ForegroundColor DarkGray
 
+# --- DETACH de la base de datos de LocalDB antes de eliminar archivos ---
+$mdfPath = Join-Path $AppDataPath "Data\MarteDb.mdf"
+$dbName = "MarteDb"
+$localDbInstance = "(localdb)\\mssqllocaldb"
+if (Test-Path $mdfPath) {
+    Write-Host "Intentando hacer DETACH de la base de datos en LocalDB..." -ForegroundColor Cyan
+    try {
+        & sqllocaldb start mssqllocaldb | Out-Null
+        $detachSql = "IF EXISTS (SELECT name FROM sys.databases WHERE name = N'$dbName') EXEC sp_detach_db N'$dbName'"
+        & sqlcmd -S $localDbInstance -Q $detachSql
+        Write-Host "[OK] Base de datos detach realizada correctamente" -ForegroundColor Green
+    } catch {
+        Write-Host "[AVISO] No se pudo detach la base de datos (puede que ya no esté adjunta): $($_.Exception.Message)" -ForegroundColor Yellow
+    }
+}
+
+# --- ELIMINAR LA INSTANCIA LOCALDB DESPUÉS DE BORRAR LOS ARCHIVOS ---
+Write-Host "Eliminando completamente la instancia LocalDB para evitar conflictos futuros..." -ForegroundColor Cyan
+try {
+    & sqllocaldb stop mssqllocaldb -i | Out-Null
+    Write-Host "[OK] Instancia LocalDB detenida" -ForegroundColor Green
+} catch {
+    Write-Host "[AVISO] No se pudo detener LocalDB (puede que ya esté detenida): $($_.Exception.Message)" -ForegroundColor Yellow
+}
+try {
+    & sqllocaldb delete mssqllocaldb | Out-Null
+    Write-Host "[OK] Instancia LocalDB eliminada" -ForegroundColor Green
+} catch {
+    Write-Host "[AVISO] No se pudo eliminar LocalDB (puede que ya no exista): $($_.Exception.Message)" -ForegroundColor Yellow
+}
 if (Test-Path $AppDataPath) {
     Write-Host "[AVISO] Se encontraron datos de aplicacion (incluye base de datos)" -ForegroundColor Yellow
     Write-Host "   Ubicacion: $AppDataPath" -ForegroundColor White
-    Write-Host ""
-    Write-Host "   ADVERTENCIA: Si elimina estos datos, perdera:" -ForegroundColor Red
-    Write-Host "   - Todos los asistentes registrados" -ForegroundColor White
-    Write-Host "   - Historial de asistencias" -ForegroundColor White
-    Write-Host "   - Usuarios y configuraciones" -ForegroundColor White
-    Write-Host ""
-    
-    $deleteData = Read-Host "Desea eliminar la base de datos y configuraciones? (S/N)"
-    
-    if ($deleteData -eq "S" -or $deleteData -eq "s") {
-        try {
-            Remove-Item -Path $AppDataPath -Recurse -Force
-            Write-Host "[OK] Datos de aplicacion eliminados" -ForegroundColor Green
-        } catch {
-            Write-Host "[ERROR] Error al eliminar datos: $($_.Exception.Message)" -ForegroundColor Red
-        }
-    } else {
-        Write-Host "[INFO] Datos de aplicacion conservados" -ForegroundColor Cyan
-        Write-Host "   Puede eliminarlos manualmente desde:" -ForegroundColor White
-        Write-Host "   $AppDataPath" -ForegroundColor White
+    Write-Host "   Eliminando datos de aplicacion y base de datos..." -ForegroundColor Cyan
+    try {
+        Remove-Item -Path $AppDataPath -Recurse -Force
+        Write-Host "[OK] Datos de aplicacion y base de datos eliminados" -ForegroundColor Green
+    } catch {
+        Write-Host "[ERROR] Error al eliminar datos: $($_.Exception.Message)" -ForegroundColor Red
     }
 } else {
     Write-Host "[INFO] No se encontraron datos de aplicacion" -ForegroundColor Gray

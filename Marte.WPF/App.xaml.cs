@@ -29,38 +29,55 @@ namespace Marte.WPF
                 _serviceProvider = services.BuildServiceProvider();
 
                 // ⭐ INICIALIZACIÓN AUTOMÁTICA DE BASE DE DATOS
+                // Crear archivos .mdf y .ldf explícitamente si no existen
+                var appDataPath = Path.Combine(
+                    Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
+                    "MARTE",
+                    "Data"
+                );
+                var dbFilePath = Path.Combine(appDataPath, "MarteDb.mdf");
+                var logFilePath = Path.Combine(appDataPath, "MarteDb_log.ldf");
+
+                if (!File.Exists(dbFilePath))
+                {
+                    // Crear base de datos física con SQL si no existe
+                    var createDbSql = $@"
+                    IF NOT EXISTS (SELECT name FROM sys.databases WHERE name = N'MarteDb')
+                    BEGIN
+                        CREATE DATABASE [MarteDb]
+                        ON (NAME = N'MarteDb', FILENAME = '{dbFilePath}')
+                        LOG ON (NAME = N'MarteDb_log', FILENAME = '{logFilePath}')
+                    END
+                    ";
+                    try
+                    {
+                        using (var sqlConnection = new System.Data.SqlClient.SqlConnection("Server=(localdb)\\mssqllocaldb;Integrated Security=True;"))
+                        {
+                            sqlConnection.Open();
+                            using (var cmd = sqlConnection.CreateCommand())
+                            {
+                                cmd.CommandText = createDbSql;
+                                cmd.ExecuteNonQuery();
+                            }
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        MessageBox.Show($"Error creando archivos físicos de la base de datos: {ex.Message}", "Error de BD", MessageBoxButton.OK, MessageBoxImage.Error);
+                        Shutdown(1);
+                        return;
+                    }
+                }
+
                 using (var scope = _serviceProvider.CreateScope())
                 {
                     var dbContext = scope.ServiceProvider.GetRequiredService<MarteDbContext>();
-                    
                     // Verificar si la BD existe
                     var dbExists = await dbContext.Database.CanConnectAsync();
-                    
-                    if (!dbExists)
-                    {
-                        // Primera ejecución - Crear BD y aplicar migraciones
-                        var result = MessageBox.Show(
-                            "Esta es la primera ejecución de MARTE.\n\n" +
-                            "Se creará la base de datos y se cargarán los datos iniciales.\n\n" +
-                            "Este proceso puede tomar unos segundos.\n\n" +
-                            "¿Desea continuar?",
-                            "Inicialización de MARTE",
-                            MessageBoxButton.YesNo,
-                            MessageBoxImage.Question);
-                        
-                        if (result == MessageBoxResult.No)
-                        {
-                            Shutdown();
-                            return;
-                        }
-                    }
-                    
-                    // Aplicar migraciones pendientes
+                    // Aplicar migraciones pendientes y seed siempre
                     await dbContext.Database.MigrateAsync();
-
-                    // Ejecutar seeder de datos iniciales
                     await DatabaseSeeder.SeedAsync(_serviceProvider);
-                    
+                    // Si la base de datos fue creada en este arranque, mostrar mensaje
                     if (!dbExists)
                     {
                         MessageBox.Show(
@@ -74,7 +91,6 @@ namespace Marte.WPF
                             MessageBoxImage.Information);
                     }
                 }
-
                 var loginWindow = _serviceProvider.GetRequiredService<LoginWindow>();
                 loginWindow.Show();
             }
@@ -105,17 +121,13 @@ namespace Marte.WPF
             Directory.CreateDirectory(appDataPath);
             
             var dbFilePath = Path.Combine(appDataPath, "MarteDb.mdf");
-            
+
             #if DEBUG
             // En desarrollo, usar la instancia actual DRUAGURTO
             var connectionString = @"Server=.\DRUAGURTO;Database=MarteDb;Trusted_Connection=True;TrustServerCertificate=True;";
             #else
             // En producción, usar LocalDB con archivo MDF portable
-            var connectionString = $@"Server=(localdb)\mssqllocaldb;
-                                     AttachDbFilename={dbFilePath};
-                                     Database=MarteDb;
-                                     Trusted_Connection=True;
-                                     MultipleActiveResultSets=True;";
+            var connectionString = $@"Server=(localdb)\mssqllocaldb;AttachDbFilename={dbFilePath};Integrated Security=True;MultipleActiveResultSets=True;";
             #endif
             
             services.AddDbContext<MarteDbContext>(options =>

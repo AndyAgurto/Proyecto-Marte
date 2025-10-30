@@ -16,7 +16,18 @@ Write-Host ""
 
 # PASO 1: Compilar en modo Release
 Write-Host "PASO 1: Compilando proyecto en modo Release..." -ForegroundColor Yellow
-dotnet publish .\Marte.WPF\Marte.WPF.csproj -c Release -o .\Marte.WPF\bin\Publish --self-contained false
+
+# Redirigir salida y errores a un log
+$publishLog = "dotnet-publish.log"
+Remove-Item $publishLog -ErrorAction SilentlyContinue
+dotnet publish .\Marte.WPF\Marte.WPF.csproj -c Release -o .\Marte.WPF\bin\Publish --self-contained false *> $publishLog 2>&1
+
+if ($LASTEXITCODE -ne 0) {
+    Write-Host "[ERROR] Compilacion fallida" -ForegroundColor Red
+    Write-Host "--- LOG DE COMPILACION ---" -ForegroundColor Yellow
+    Get-Content $publishLog | Select-Object -Last 40 | ForEach-Object { Write-Host $_ }
+    exit 1
+}
 
 if ($LASTEXITCODE -ne 0) {
     Write-Host "[ERROR] Compilacion fallida" -ForegroundColor Red
