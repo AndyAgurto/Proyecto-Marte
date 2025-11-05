@@ -155,7 +155,11 @@
                         <TextBox Grid.Column="1" 
                                  Text="{Binding DNIBusqueda, UpdateSourceTrigger=PropertyChanged}"
                                  VerticalAlignment="Center"
-                                 Margin="0,0,20,0"/>
+                                 Margin="0,0,20,0">
+                            <TextBox.InputBindings>
+                                <KeyBinding Key="Return" Command="{Binding RegistrarIngresoCommand}"/>
+                            </TextBox.InputBindings>
+                        </TextBox>
                         
                         <Button Grid.Column="2"
                                 Content="Registrar Ingreso"
