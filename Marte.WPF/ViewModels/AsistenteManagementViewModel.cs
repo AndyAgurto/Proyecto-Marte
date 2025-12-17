@@ -26,6 +26,7 @@ namespace Marte.WPF.ViewModels
         private Categoria? _selectedCategoria;
         private string _numeroGrupo = string.Empty;
         private bool _mostrarSoloActivos = true;
+        private string _filtroBusqueda = string.Empty;
 
         public AsistenteManagementViewModel(
             IAsistenteService asistenteService,
@@ -47,6 +48,8 @@ namespace Marte.WPF.ViewModels
             InactivarAsistenteCommand = new RelayCommand(() => ExecuteInactivarAsistente(null), () => CanInactivarAsistente(null));
             ActivarAsistenteCommand = new RelayCommand(() => ExecuteActivarAsistente(null), () => CanActivarAsistente(null));
             CancelCommand = new RelayCommand(() => ExecuteCancel(null));
+            BuscarCommand = new RelayCommand(() => ExecuteBuscar(null));
+            LimpiarFiltroCommand = new RelayCommand(() => ExecuteLimpiarFiltro(null));
 
             _ = LoadData();
         }
@@ -193,6 +196,12 @@ namespace Marte.WPF.ViewModels
             }
         }
 
+        public string FiltroBusqueda
+        {
+            get => _filtroBusqueda;
+            set => SetProperty(ref _filtroBusqueda, value);
+        }
+
         public bool IsFormReadOnly => !IsEditMode && !IsNewMode;
         public bool IsDNIReadOnly => !IsNewMode; // DNI solo editable al crear nuevo
         public bool IsCategoriaEnabled => IsEditMode || IsNewMode;
@@ -207,6 +216,8 @@ namespace Marte.WPF.ViewModels
         #endregion
 
         #region Commands
+        public ICommand BuscarCommand { get; }
+        public ICommand LimpiarFiltroCommand { get; }
 
         public ICommand NewAsistenteCommand { get; }
         public ICommand SaveAsistenteCommand { get; }
@@ -480,6 +491,9 @@ namespace Marte.WPF.ViewModels
                     asistentes = await _asistenteService.GetAllAsistentesAsync();
                 }
 
+                // Filtrar asistentes temporales (DNI que empieza con "TEMP-")
+                asistentes = asistentes.Where(a => !a.DNI.StartsWith("TEMP-"));
+
                 Asistentes.Clear();
                 foreach (var asistente in asistentes)
                 {
@@ -499,6 +513,42 @@ namespace Marte.WPF.ViewModels
             DNI = asistente.DNI;
             SelectedCategoria = Categorias.FirstOrDefault(c => c.Id == asistente.CategoriaId);
             NumeroGrupo = asistente.NumeroGrupo ?? string.Empty;
+        }
+
+        private async void ExecuteBuscar(object? parameter)
+        {
+            try
+            {
+                if (string.IsNullOrWhiteSpace(FiltroBusqueda))
+                {
+                    await LoadAsistentes();
+                    return;
+                }
+
+                var asistentes = await _asistenteService.BuscarAsistentesNormalizadoAsync(FiltroBusqueda);
+
+                // Filtrar asistentes temporales
+                asistentes = asistentes.Where(a => !a.DNI.StartsWith("TEMP-"));
+
+                Asistentes.Clear();
+                foreach (var asistente in asistentes)
+                {
+                    if (!MostrarSoloActivos || asistente.Estado)
+                    {
+                        Asistentes.Add(asistente);
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Error al buscar asistentes: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+        }
+
+        private async void ExecuteLimpiarFiltro(object? parameter)
+        {
+            FiltroBusqueda = string.Empty;
+            await LoadAsistentes();
         }
 
         private void ClearForm()

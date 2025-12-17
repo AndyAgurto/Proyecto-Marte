@@ -12,10 +12,12 @@ namespace Marte.Application.Services
     public class ReporteService : IReporteService
     {
         private readonly IReporteRepository _reporteRepository;
+        private readonly IAsistenciaRepository _asistenciaRepository;
 
-        public ReporteService(IReporteRepository reporteRepository)
+        public ReporteService(IReporteRepository reporteRepository, IAsistenciaRepository asistenciaRepository)
         {
             _reporteRepository = reporteRepository;
+            _asistenciaRepository = asistenciaRepository;
             
             // Configurar QuestPDF
             QuestPDF.Settings.License = LicenseType.Community;
@@ -71,6 +73,16 @@ namespace Marte.Application.Services
         public async Task<IEnumerable<ReporteTopConstantes>> GetTopAsistentesConstantesAsync(DateTime fechaInicio, DateTime fechaFin, int top = 10)
         {
             return await _reporteRepository.GetTopAsistentesConstantesAsync(fechaInicio, fechaFin, top);
+        }
+
+        public async Task<IEnumerable<ReporteHistorialIndividualBusqueda>> GetHistorialIndividualBusquedaUnificadaAsync(string busqueda, DateTime fechaInicio, DateTime fechaFin)
+        {
+            return await _reporteRepository.GetHistorialIndividualBusquedaUnificadaAsync(busqueda, fechaInicio, fechaFin);
+        }
+
+        public async Task<IEnumerable<ReporteCategoriaJerarquico>> GetReporteCategoriaJerarquicoAsync(DateTime fechaInicio, DateTime fechaFin)
+        {
+            return await _reporteRepository.GetReporteCategoriaJerarquicoAsync(fechaInicio, fechaFin);
         }
 
         #endregion
@@ -849,6 +861,577 @@ namespace Marte.Application.Services
             workbook.SaveAs(rutaArchivo);
 
             return rutaArchivo;
+        }
+
+        public async Task<string> ExportarHistorialBusquedaExcelAsync(string busqueda, DateTime fechaInicio, DateTime fechaFin, string rutaArchivo)
+        {
+            var datos = await GetHistorialIndividualBusquedaUnificadaAsync(busqueda, fechaInicio, fechaFin);
+
+            using var workbook = new XLWorkbook();
+            var worksheet = workbook.Worksheets.Add("Historial Búsqueda");
+
+            worksheet.Cell(1, 1).Value = $"HISTORIAL INDIVIDUAL - Búsqueda: {busqueda}";
+            worksheet.Cell(1, 1).Style.Font.Bold = true;
+            worksheet.Cell(1, 1).Style.Font.FontSize = 16;
+            worksheet.Range(1, 1, 1, 8).Merge();
+
+            worksheet.Cell(2, 1).Value = $"Período: {fechaInicio:dd/MM/yyyy} - {fechaFin:dd/MM/yyyy}";
+            worksheet.Range(2, 1, 2, 8).Merge();
+
+            var totalAsistentes = datos.Select(d => d.DNI).Distinct().Count();
+            worksheet.Cell(3, 1).Value = $"Total asistencias encontradas: {datos.Count()} | Total asistentes: {totalAsistentes}";
+            worksheet.Range(3, 1, 3, 8).Merge();
+
+            worksheet.Cell(5, 1).Value = "DNI";
+            worksheet.Cell(5, 2).Value = "Nombre Completo";
+            worksheet.Cell(5, 3).Value = "Categoría";
+            worksheet.Cell(5, 4).Value = "Fecha";
+            worksheet.Cell(5, 5).Value = "Hora Ingreso";
+            worksheet.Cell(5, 6).Value = "Hora Salida";
+            worksheet.Cell(5, 7).Value = "Hasta Cierre";
+            worksheet.Cell(5, 8).Value = "Observación";
+            worksheet.Range(5, 1, 5, 8).Style.Font.Bold = true;
+            worksheet.Range(5, 1, 5, 8).Style.Fill.BackgroundColor = XLColor.DarkRed;
+            worksheet.Range(5, 1, 5, 8).Style.Font.FontColor = XLColor.White;
+
+            int row = 6;
+            foreach (var item in datos)
+            {
+                worksheet.Cell(row, 1).Value = item.DNI;
+                worksheet.Cell(row, 2).Value = item.NombreCompleto;
+                worksheet.Cell(row, 3).Value = item.Categoria;
+                worksheet.Cell(row, 4).Value = item.Fecha.ToString("dd/MM/yyyy");
+                worksheet.Cell(row, 5).Value = item.HoraIngreso.ToString(@"hh\:mm");
+                worksheet.Cell(row, 6).Value = item.HoraSalida?.ToString(@"hh\:mm") ?? "-";
+                worksheet.Cell(row, 7).Value = item.HastaCierre ? "Sí" : "No";
+                worksheet.Cell(row, 8).Value = item.Observacion ?? "";
+                row++;
+            }
+
+            worksheet.Columns().AdjustToContents();
+            workbook.SaveAs(rutaArchivo);
+
+            return rutaArchivo;
+        }
+
+        public async Task<string> ExportarHistorialBusquedaPDFAsync(string busqueda, DateTime fechaInicio, DateTime fechaFin, string rutaArchivo)
+        {
+            try
+            {
+                var asistencias = await GetHistorialIndividualBusquedaUnificadaAsync(busqueda, fechaInicio, fechaFin);
+
+                QuestPDF.Fluent.Document.Create(container =>
+                {
+                    container.Page(page =>
+                    {
+                        page.Size(PageSizes.A4.Landscape());
+                        page.Margin(2, Unit.Centimetre);
+                        page.DefaultTextStyle(x => x.FontSize(10));
+
+                        page.Header().Column(column =>
+                        {
+                            column.Item().Text($"HISTORIAL INDIVIDUAL - Búsqueda: {busqueda}")
+                                .FontSize(16).Bold().FontColor(Colors.Red.Darken4);
+                            column.Item().Text($"Período: {fechaInicio:dd/MM/yyyy} - {fechaFin:dd/MM/yyyy}")
+                                .FontSize(10);
+                            column.Item().Text($"Total asistencias: {asistencias.Count()} | Asistentes únicos: {asistencias.Select(a => a.DNI).Distinct().Count()}")
+                                .FontSize(10).Bold();
+                        });
+
+                        page.Content().Table(table =>
+                        {
+                            table.ColumnsDefinition(columns =>
+                            {
+                                columns.RelativeColumn(1.5f);
+                                columns.RelativeColumn(2.5f);
+                                columns.RelativeColumn(2f);
+                                columns.RelativeColumn(1.5f);
+                                columns.RelativeColumn(1.2f);
+                                columns.RelativeColumn(1.2f);
+                                columns.RelativeColumn(1f);
+                                columns.RelativeColumn(2f);
+                            });
+
+                            table.Header(header =>
+                            {
+                                header.Cell().Background(Colors.Red.Darken4).Padding(5).Text("DNI").FontColor(Colors.White).Bold();
+                                header.Cell().Background(Colors.Red.Darken4).Padding(5).Text("Nombre Completo").FontColor(Colors.White).Bold();
+                                header.Cell().Background(Colors.Red.Darken4).Padding(5).Text("Categoría").FontColor(Colors.White).Bold();
+                                header.Cell().Background(Colors.Red.Darken4).Padding(5).Text("Fecha").FontColor(Colors.White).Bold();
+                                header.Cell().Background(Colors.Red.Darken4).Padding(5).Text("Hora Ingreso").FontColor(Colors.White).Bold();
+                                header.Cell().Background(Colors.Red.Darken4).Padding(5).Text("Hora Salida").FontColor(Colors.White).Bold();
+                                header.Cell().Background(Colors.Red.Darken4).Padding(5).Text("Hasta Cierre").FontColor(Colors.White).Bold();
+                                header.Cell().Background(Colors.Red.Darken4).Padding(5).Text("Observación").FontColor(Colors.White).Bold();
+                            });
+
+                            foreach (var item in asistencias.OrderBy(a => a.Fecha).ThenBy(a => a.HoraIngreso))
+                            {
+                                table.Cell().BorderBottom(1).BorderColor(Colors.Grey.Lighten2).Padding(3).Text(item.DNI);
+                                table.Cell().BorderBottom(1).BorderColor(Colors.Grey.Lighten2).Padding(3).Text(item.NombreCompleto);
+                                table.Cell().BorderBottom(1).BorderColor(Colors.Grey.Lighten2).Padding(3).Text(item.Categoria);
+                                table.Cell().BorderBottom(1).BorderColor(Colors.Grey.Lighten2).Padding(3).Text(item.Fecha.ToString("dd/MM/yyyy"));
+                                table.Cell().BorderBottom(1).BorderColor(Colors.Grey.Lighten2).Padding(3).Text(item.HoraIngreso.ToString(@"hh\:mm"));
+                                table.Cell().BorderBottom(1).BorderColor(Colors.Grey.Lighten2).Padding(3).Text(item.HoraSalida?.ToString(@"hh\:mm") ?? "-");
+                                table.Cell().BorderBottom(1).BorderColor(Colors.Grey.Lighten2).Padding(3).Text(item.HastaCierre ? "Sí" : "No");
+                                table.Cell().BorderBottom(1).BorderColor(Colors.Grey.Lighten2).Padding(3).Text(item.Observacion ?? "-");
+                            }
+                        });
+                    });
+                }).GeneratePdf(rutaArchivo);
+
+                return rutaArchivo;
+            }
+            catch (Exception ex)
+            {
+                throw new Exception($"Error al exportar historial de búsqueda a PDF: {ex.Message}", ex);
+            }
+        }
+
+        #endregion
+
+        #region Exportación Asistentes Temporales
+
+        public async Task<string> ExportarAsistentesTemporalesExcelAsync(DateTime fechaInicio, DateTime fechaFin, string rutaArchivo)
+        {
+            try
+            {
+                var todasAsistencias = await _asistenciaRepository.GetAllAsync();
+                
+                // Filtrar solo asistentes temporales (DNI empieza con "TEMP-") y rango de fechas
+                var asistenciasTemporales = todasAsistencias
+                    .Where(a => a.Asistente.DNI.StartsWith("TEMP-") && 
+                           a.Fecha >= fechaInicio.Date && a.Fecha <= fechaFin.Date)
+                    .ToList();
+
+                using var workbook = new XLWorkbook();
+                var worksheet = workbook.Worksheets.Add("Asistentes Temporales");
+
+                // Título
+                worksheet.Cell(1, 1).Value = "ASISTENTES TEMPORALES";
+                worksheet.Range(1, 1, 1, 7).Merge().Style
+                    .Font.SetBold(true)
+                    .Font.SetFontSize(16)
+                    .Alignment.SetHorizontal(XLAlignmentHorizontalValues.Center);
+
+                // Período
+                worksheet.Cell(2, 1).Value = $"Período: {fechaInicio:dd/MM/yyyy} - {fechaFin:dd/MM/yyyy}";
+                worksheet.Range(2, 1, 2, 7).Merge();
+
+                // Resumen
+                worksheet.Cell(3, 1).Value = $"Total de asistencias: {asistenciasTemporales.Count}";
+                worksheet.Cell(3, 1).Style.Font.SetBold(true);
+
+                // Encabezados
+                var headers = new[] { "Codigo Temporal", "Nombre Completo", "Fecha", "Hora Ingreso", "Hora Salida", "Hasta Cierre", "Observación" };
+                for (int i = 0; i < headers.Length; i++)
+                {
+                    var cell = worksheet.Cell(5, i + 1);
+                    cell.Value = headers[i];
+                    cell.Style.Fill.SetBackgroundColor(XLColor.FromHtml("#8B0000"))
+                        .Font.SetFontColor(XLColor.White)
+                        .Font.SetBold(true);
+                }
+
+                // Datos
+                int row = 6;
+                foreach (var asistencia in asistenciasTemporales.OrderBy(a => a.Fecha).ThenBy(a => a.HoraIngreso))
+                {
+                    worksheet.Cell(row, 1).Value = asistencia.Asistente.DNI;
+                    worksheet.Cell(row, 2).Value = $"{asistencia.Asistente.Nombres} {asistencia.Asistente.Apellidos}";
+                    worksheet.Cell(row, 3).Value = asistencia.Fecha.ToString("dd/MM/yyyy");
+                    worksheet.Cell(row, 4).Value = asistencia.HoraIngreso.ToString(@"hh\:mm");
+                    worksheet.Cell(row, 5).Value = asistencia.HoraSalida?.ToString(@"hh\:mm") ?? "-";
+                    worksheet.Cell(row, 6).Value = asistencia.HastaCierre ? "Sí" : "No";
+                    worksheet.Cell(row, 7).Value = asistencia.Observacion ?? "-";
+                    row++;
+                }
+
+                // Ajustar columnas
+                worksheet.Columns().AdjustToContents();
+
+                workbook.SaveAs(rutaArchivo);
+                return rutaArchivo;
+            }
+            catch (Exception ex)
+            {
+                throw new Exception($"Error al exportar asistentes temporales: {ex.Message}", ex);
+            }
+        }
+
+        #endregion
+
+        #region Exportación Categoría Jerárquica
+
+        public async Task<string> ExportarCategoriaJerarquicaExcelAsync(DateTime fechaInicio, DateTime fechaFin, string rutaArchivo)
+        {
+            try
+            {
+                var datos = await _reporteRepository.GetReporteCategoriaJerarquicoAsync(fechaInicio, fechaFin);
+                
+                // Obtener asistencias detalladas con categorías
+                var asistenciasDetalladas = await _asistenciaRepository.GetByFechaRangoAsync(fechaInicio, fechaFin);
+
+                using var workbook = new XLWorkbook();
+                var worksheet = workbook.Worksheets.Add("Categoría Jerárquica Detallada");
+
+                // Título
+                worksheet.Cell(1, 1).Value = "REPORTE JERÁRQUICO POR CATEGORÍA - DETALLADO";
+                worksheet.Range(1, 1, 1, 8).Merge().Style
+                    .Font.SetBold(true)
+                    .Font.SetFontSize(16)
+                    .Alignment.SetHorizontal(XLAlignmentHorizontalValues.Center);
+
+                // Período
+                worksheet.Cell(2, 1).Value = $"Período: {fechaInicio:dd/MM/yyyy} - {fechaFin:dd/MM/yyyy}";
+                worksheet.Range(2, 1, 2, 8).Merge();
+
+                // Resumen
+                var totalAsistencias = datos.Sum(d => d.TotalAsistencias);
+                worksheet.Cell(3, 1).Value = $"Total de asistencias: {totalAsistencias}";
+                worksheet.Cell(3, 1).Style.Font.SetBold(true);
+
+                int row = 5;
+
+                // Jerarquía de categorías
+                var jerarquia = new Dictionary<string, (int Orden, string[] Variantes)>
+                {
+                    { "Jefe de Filial", (1, new[] { "Jefe de Filial" }) },
+                    { "Jefe de Filial LM", (2, new[] { "Jefe de Filial LM" }) },
+                    { "Jefe de Filial LN", (3, new[] { "Jefe de Filial LN" }) },
+                    { "Secretarios", (4, new[] { "Secretarios", "Secretario" }) },
+                    { "G de S", (5, new[] { "G de S", "GS", "Grupo de Seguridad" }) },
+                    { "GG.FF", (6, new[] { "GG.FF", "GGFF" }) },
+                    { "GG.MM", (7, new[] { "GG.MM", "GGMM" }) },
+                    { "Miembros", (8, new[] { "Miembros" }) },
+                    { "Miembros LM", (9, new[] { "Miembros LM" }) },
+                    { "Miembros LN", (10, new[] { "Miembros LN" }) },
+                    { "Filosofía", (11, new[] { "Filosofía", "Filosofia" }) },
+                    { "Otros", (12, new[] { "Otros", "Otro" }) }
+                };
+
+                var fuerzasVivas = new HashSet<string> { "G de S", "GG.FF", "GG.MM" };
+
+                // Procesar cada categoría en orden jerárquico
+                foreach (var categoria in datos.OrderBy(d => d.Orden))
+                {
+                    // Título de categoría
+                    worksheet.Cell(row, 1).Value = $"{categoria.Orden}. {categoria.CategoriaJerarquica}";
+                    if (categoria.GrupoAgrupacion != null)
+                    {
+                        worksheet.Cell(row, 1).Value += $" ({categoria.GrupoAgrupacion})";
+                    }
+                    worksheet.Range(row, 1, row, 8).Merge();
+                    worksheet.Cell(row, 1).Style
+                        .Fill.SetBackgroundColor(XLColor.FromHtml("#8B0000"))
+                        .Font.SetFontColor(XLColor.White)
+                        .Font.SetBold(true)
+                        .Font.SetFontSize(12);
+                    row++;
+
+                    // Resumen de categoría
+                    worksheet.Cell(row, 1).Value = "Total Asistencias:";
+                    worksheet.Cell(row, 2).Value = categoria.TotalAsistencias;
+                    worksheet.Cell(row, 3).Value = "Hasta Cierre:";
+                    worksheet.Cell(row, 4).Value = categoria.TotalHastaCierre;
+                    worksheet.Cell(row, 5).Value = "% Cierre:";
+                    worksheet.Cell(row, 6).Value = $"{categoria.PorcentajeCierre:F2}%";
+                    worksheet.Range(row, 1, row, 1).Style.Font.SetBold(true);
+                    worksheet.Range(row, 3, row, 3).Style.Font.SetBold(true);
+                    worksheet.Range(row, 5, row, 5).Style.Font.SetBold(true);
+                    row++;
+
+                    // Encabezados de detalle
+                    var headers = new[] { "DNI", "Nombre Completo", "Grupo", "Fecha", "Hora Ingreso", "Hora Salida", "Hasta Cierre", "Observación" };
+                    for (int i = 0; i < headers.Length; i++)
+                    {
+                        var cell = worksheet.Cell(row, i + 1);
+                        cell.Value = headers[i];
+                        cell.Style.Fill.SetBackgroundColor(XLColor.LightGray)
+                            .Font.SetBold(true);
+                    }
+                    row++;
+
+                    // Filtrar asistencias de esta categoría
+                    var asistenciasCategoria = asistenciasDetalladas
+                        .Where(a => a.Asistente?.Categoria != null && ObtenerCategoriaJerarquica(a.Asistente.Categoria.Nombre, jerarquia).Nombre == categoria.CategoriaJerarquica)
+                        .OrderBy(a => a.Fecha)
+                            .ThenBy(a => a.Asistente.Apellidos)
+                            .ThenBy(a => a.Asistente.Nombres);
+
+                    // Datos de asistentes
+                    foreach (var asistencia in asistenciasCategoria)
+                    {
+                        worksheet.Cell(row, 1).Value = asistencia.Asistente.DNI;
+                        worksheet.Cell(row, 2).Value = $"{asistencia.Asistente.Apellidos}, {asistencia.Asistente.Nombres}";
+                        worksheet.Cell(row, 3).Value = asistencia.Asistente.NumeroGrupo ?? "-";
+                        worksheet.Cell(row, 4).Value = asistencia.Fecha.ToString("dd/MM/yyyy");
+                        worksheet.Cell(row, 5).Value = asistencia.HoraIngreso.ToString(@"hh\:mm");
+                        worksheet.Cell(row, 6).Value = asistencia.HoraSalida?.ToString(@"hh\:mm") ?? "-";
+                        worksheet.Cell(row, 7).Value = asistencia.HastaCierre ? "Sí" : "No";
+                        worksheet.Cell(row, 8).Value = asistencia.Observacion ?? "-";
+                        row++;
+                    }
+
+                    // Espacio entre categorías
+                    row++;
+                }
+
+                // Ajustar columnas
+                worksheet.Column(1).Width = 12;
+                worksheet.Column(2).Width = 30;
+                worksheet.Column(3).Width = 8;
+                worksheet.Column(4).Width = 12;
+                worksheet.Column(5).Width = 12;
+                worksheet.Column(6).Width = 12;
+                worksheet.Column(7).Width = 12;
+                worksheet.Column(8).Width = 20;
+
+                workbook.SaveAs(rutaArchivo);
+                return rutaArchivo;
+            }
+            catch (Exception ex)
+            {
+                throw new Exception($"Error al exportar categoría jerárquica: {ex.Message}", ex);
+            }
+        }
+
+        public async Task<string> ExportarCategoriaJerarquicaPDFAsync(DateTime fechaInicio, DateTime fechaFin, string rutaArchivo)
+        {
+            try
+            {
+                var datos = await _reporteRepository.GetReporteCategoriaJerarquicoAsync(fechaInicio, fechaFin);
+                
+                // Obtener asistencias detalladas con categorías
+                var asistenciasDetalladas = await _asistenciaRepository.GetByFechaRangoAsync(fechaInicio, fechaFin);
+
+                // Jerarquía de categorías
+                var jerarquia = new Dictionary<string, (int Orden, string[] Variantes)>
+                {
+                    { "Jefe de Filial", (1, new[] { "Jefe de Filial" }) },
+                    { "Jefe de Filial LM", (2, new[] { "Jefe de Filial LM" }) },
+                    { "Jefe de Filial LN", (3, new[] { "Jefe de Filial LN" }) },
+                    { "Secretarios", (4, new[] { "Secretarios", "Secretario" }) },
+                    { "G de S", (5, new[] { "G de S", "GS", "Grupo de Seguridad" }) },
+                    { "GG.FF", (6, new[] { "GG.FF", "GGFF" }) },
+                    { "GG.MM", (7, new[] { "GG.MM", "GGMM" }) },
+                    { "Miembros", (8, new[] { "Miembros" }) },
+                    { "Miembros LM", (9, new[] { "Miembros LM" }) },
+                    { "Miembros LN", (10, new[] { "Miembros LN" }) },
+                    { "Filosofía", (11, new[] { "Filosofía", "Filosofia" }) },
+                    { "Otros", (12, new[] { "Otros", "Otro" }) }
+                };
+
+                Document.Create(container =>
+                {
+                    container.Page(page =>
+                    {
+                        page.Size(PageSizes.A4.Landscape());
+                        page.Margin(1, Unit.Centimetre);
+                        page.PageColor(Colors.White);
+                        page.DefaultTextStyle(x => x.FontSize(8).FontFamily("Arial"));
+
+                        page.Header().Element(header =>
+                        {
+                            header.Column(column =>
+                            {
+                                column.Item().Text("REPORTE JERÁRQUICO POR CATEGORÍA - DETALLADO")
+                                    .FontSize(16).Bold().FontColor(Colors.Red.Darken3);
+                                column.Item().Text($"Período: {fechaInicio:dd/MM/yyyy} - {fechaFin:dd/MM/yyyy}")
+                                    .FontSize(10);
+                                column.Item().Text($"Generado: {DateTime.Now:dd/MM/yyyy HH:mm}")
+                                    .FontSize(8).FontColor(Colors.Grey.Medium);
+                                column.Item().PaddingTop(5).Text($"Total de asistencias: {datos.Sum(d => d.TotalAsistencias)}")
+                                    .FontSize(10).Bold();
+                            });
+                        });
+
+                        page.Content().Column(column =>
+                        {
+                            foreach (var categoria in datos.OrderBy(d => d.Orden))
+                            {
+                                // Título de categoría
+                                var titulo = $"{categoria.Orden}. {categoria.CategoriaJerarquica}";
+                                if (categoria.GrupoAgrupacion != null)
+                                {
+                                    titulo += $" ({categoria.GrupoAgrupacion})";
+                                }
+                                column.Item().PaddingTop(10).Text(titulo)
+                                    .FontSize(11).Bold().FontColor(Colors.Red.Darken4);
+
+                                // Resumen de categoría
+                                column.Item().PaddingTop(3).Text(text =>
+                                {
+                                    text.Span("Total Asistencias: ").Bold().FontSize(8);
+                                    text.Span(categoria.TotalAsistencias.ToString()).FontSize(8);
+                                    text.Span("  |  Hasta Cierre: ").Bold().FontSize(8);
+                                    text.Span(categoria.TotalHastaCierre.ToString()).FontSize(8);
+                                    text.Span($"  |  % Cierre: ").Bold().FontSize(8);
+                                    text.Span($"{categoria.PorcentajeCierre:F2}%").FontSize(8);
+                                });
+
+                                // Filtrar asistencias de esta categoría
+                                var asistenciasCategoria = asistenciasDetalladas
+                                    .Where(a => a.Asistente?.Categoria != null && ObtenerCategoriaJerarquica(a.Asistente.Categoria.Nombre, jerarquia).Nombre == categoria.CategoriaJerarquica)
+                                    .OrderBy(a => a.Fecha)
+                                        .ThenBy(a => a.Asistente.Apellidos)
+                                        .ThenBy(a => a.Asistente.Nombres)
+                                    .ToList();
+
+                                if (asistenciasCategoria.Any())
+                                {
+                                    column.Item().PaddingTop(5).Table(table =>
+                                    {
+                                        table.ColumnsDefinition(columns =>
+                                        {
+                                            columns.RelativeColumn(1.2f);  // DNI
+                                            columns.RelativeColumn(2.5f);  // Nombre
+                                            columns.RelativeColumn(0.8f);  // Grupo
+                                            columns.RelativeColumn(1.2f);  // Fecha
+                                            columns.RelativeColumn(1f);    // H.Ingreso
+                                            columns.RelativeColumn(1f);    // H.Salida
+                                            columns.RelativeColumn(0.8f);  // H.Cierre
+                                        });
+
+                                        // Encabezados de detalle
+                                        table.Header(header =>
+                                        {
+                                            header.Cell().Background(Colors.Grey.Lighten2).Padding(3).Text("DNI").FontSize(7).Bold();
+                                            header.Cell().Background(Colors.Grey.Lighten2).Padding(3).Text("Nombre Completo").FontSize(7).Bold();
+                                            header.Cell().Background(Colors.Grey.Lighten2).Padding(3).Text("Grupo").FontSize(7).Bold();
+                                            header.Cell().Background(Colors.Grey.Lighten2).Padding(3).Text("Fecha").FontSize(7).Bold();
+                                            header.Cell().Background(Colors.Grey.Lighten2).Padding(3).Text("Ingreso").FontSize(7).Bold();
+                                            header.Cell().Background(Colors.Grey.Lighten2).Padding(3).Text("Salida").FontSize(7).Bold();
+                                            header.Cell().Background(Colors.Grey.Lighten2).Padding(3).Text("H.Cierre").FontSize(7).Bold();
+                                        });
+
+                                        // Datos de asistentes
+                                        foreach (var asistencia in asistenciasCategoria)
+                                        {
+                                            table.Cell().BorderBottom(1).BorderColor(Colors.Grey.Lighten2).Padding(2).Text(asistencia.Asistente.DNI).FontSize(7);
+                                            table.Cell().BorderBottom(1).BorderColor(Colors.Grey.Lighten2).Padding(2).Text($"{asistencia.Asistente.Apellidos}, {asistencia.Asistente.Nombres}").FontSize(7);
+                                            table.Cell().BorderBottom(1).BorderColor(Colors.Grey.Lighten2).Padding(2).Text(asistencia.Asistente.NumeroGrupo ?? "-").FontSize(7);
+                                            table.Cell().BorderBottom(1).BorderColor(Colors.Grey.Lighten2).Padding(2).Text(asistencia.Fecha.ToString("dd/MM/yy")).FontSize(7);
+                                            table.Cell().BorderBottom(1).BorderColor(Colors.Grey.Lighten2).Padding(2).Text(asistencia.HoraIngreso.ToString(@"hh\:mm")).FontSize(7);
+                                            table.Cell().BorderBottom(1).BorderColor(Colors.Grey.Lighten2).Padding(2).Text(asistencia.HoraSalida?.ToString(@"hh\:mm") ?? "-").FontSize(7);
+                                            table.Cell().BorderBottom(1).BorderColor(Colors.Grey.Lighten2).Padding(2).Text(asistencia.HastaCierre ? "Sí" : "No").FontSize(7);
+                                        }
+                                    });
+                                }
+                                else
+                                {
+                                    column.Item().PaddingTop(5).Text("Sin asistencias registradas").Italic().FontSize(8);
+                                }
+                            }
+                        });
+
+                        page.Footer().AlignCenter().Text(text =>
+                        {
+                            text.Span("Página ");
+                            text.CurrentPageNumber();
+                            text.Span(" de ");
+                            text.TotalPages();
+                        });
+                    });
+                }).GeneratePdf(rutaArchivo);
+
+                return rutaArchivo;
+            }
+            catch (Exception ex)
+            {
+                throw new Exception($"Error al exportar categoría jerárquica a PDF: {ex.Message}", ex);
+            }
+        }
+
+        public async Task<string> ExportarAsistentesTemporalesPDFAsync(DateTime fechaInicio, DateTime fechaFin, string rutaArchivo)
+        {
+            try
+            {
+                var todasAsistencias = await _asistenciaRepository.GetAllAsync();
+                var asistenciasTemporales = todasAsistencias
+                    .Where(a => a.Asistente.DNI.StartsWith("TEMP-") && 
+                           a.Fecha >= fechaInicio.Date && a.Fecha <= fechaFin.Date)
+                    .ToList();
+
+                QuestPDF.Fluent.Document.Create(container =>
+                {
+                    container.Page(page =>
+                    {
+                        page.Size(PageSizes.A4.Landscape());
+                        page.Margin(2, Unit.Centimetre);
+                        page.DefaultTextStyle(x => x.FontSize(10));
+
+                        page.Header().Column(column =>
+                        {
+                            column.Item().Text("ASISTENTES TEMPORALES")
+                                .FontSize(16).Bold().FontColor(Colors.Red.Darken4);
+                            column.Item().Text($"Período: {fechaInicio:dd/MM/yyyy} - {fechaFin:dd/MM/yyyy}")
+                                .FontSize(10);
+                            column.Item().Text($"Total de asistencias: {asistenciasTemporales.Count}")
+                                .FontSize(10).Bold();
+                        });
+
+                        page.Content().Table(table =>
+                        {
+                            table.ColumnsDefinition(columns =>
+                            {
+                                columns.RelativeColumn(2f);
+                                columns.RelativeColumn(2.5f);
+                                columns.RelativeColumn(1.5f);
+                                columns.RelativeColumn(1.2f);
+                                columns.RelativeColumn(1.2f);
+                                columns.RelativeColumn(1f);
+                                columns.RelativeColumn(2f);
+                            });
+
+                            table.Header(header =>
+                            {
+                                header.Cell().Background(Colors.Red.Darken4).Padding(5).Text("DNI Temporal").FontColor(Colors.White).Bold();
+                                header.Cell().Background(Colors.Red.Darken4).Padding(5).Text("Nombre Completo").FontColor(Colors.White).Bold();
+                                header.Cell().Background(Colors.Red.Darken4).Padding(5).Text("Fecha").FontColor(Colors.White).Bold();
+                                header.Cell().Background(Colors.Red.Darken4).Padding(5).Text("Hora Ingreso").FontColor(Colors.White).Bold();
+                                header.Cell().Background(Colors.Red.Darken4).Padding(5).Text("Hora Salida").FontColor(Colors.White).Bold();
+                                header.Cell().Background(Colors.Red.Darken4).Padding(5).Text("Hasta Cierre").FontColor(Colors.White).Bold();
+                                header.Cell().Background(Colors.Red.Darken4).Padding(5).Text("Observación").FontColor(Colors.White).Bold();
+                            });
+
+                            foreach (var asistencia in asistenciasTemporales.OrderBy(a => a.Fecha).ThenBy(a => a.HoraIngreso))
+                            {
+                                table.Cell().BorderBottom(1).BorderColor(Colors.Grey.Lighten2).Padding(3).Text(asistencia.Asistente.DNI);
+                                table.Cell().BorderBottom(1).BorderColor(Colors.Grey.Lighten2).Padding(3).Text($"{asistencia.Asistente.Nombres} {asistencia.Asistente.Apellidos}");
+                                table.Cell().BorderBottom(1).BorderColor(Colors.Grey.Lighten2).Padding(3).Text(asistencia.Fecha.ToString("dd/MM/yyyy"));
+                                table.Cell().BorderBottom(1).BorderColor(Colors.Grey.Lighten2).Padding(3).Text(asistencia.HoraIngreso.ToString(@"hh\:mm"));
+                                table.Cell().BorderBottom(1).BorderColor(Colors.Grey.Lighten2).Padding(3).Text(asistencia.HoraSalida?.ToString(@"hh\:mm") ?? "-");
+                                table.Cell().BorderBottom(1).BorderColor(Colors.Grey.Lighten2).Padding(3).Text(asistencia.HastaCierre ? "Sí" : "No");
+                                table.Cell().BorderBottom(1).BorderColor(Colors.Grey.Lighten2).Padding(3).Text(asistencia.Observacion ?? "-");
+                            }
+                        });
+                    });
+                }).GeneratePdf(rutaArchivo);
+
+                return rutaArchivo;
+            }
+            catch (Exception ex)
+            {
+                throw new Exception($"Error al exportar asistentes temporales a PDF: {ex.Message}", ex);
+            }
+        }
+
+        // Método auxiliar para obtener categoría jerárquica
+        private (string Nombre, int Orden) ObtenerCategoriaJerarquica(string categoriaNombre, Dictionary<string, (int Orden, string[] Variantes)> jerarquia)
+        {
+            foreach (var kvp in jerarquia)
+            {
+                foreach (var variante in kvp.Value.Variantes)
+                {
+                    if (categoriaNombre.Equals(variante, StringComparison.OrdinalIgnoreCase))
+                    {
+                        return (kvp.Key, kvp.Value.Orden);
+                    }
+                }
+            }
+
+            // Si no se encuentra, asignar a "Otros"
+            return ("Otros", 12);
         }
 
         #endregion

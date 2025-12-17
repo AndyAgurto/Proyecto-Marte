@@ -4,12 +4,12 @@
 [![.NET](https://img.shields.io/badge/.NET-9.0-purple.svg)](https://dotnet.microsoft.com/download)
 [![WPF](https://img.shields.io/badge/WPF-Windows-blue.svg)](https://docs.microsoft.com/en-us/dotnet/desktop/wpf/)
 [![Entity Framework](https://img.shields.io/badge/Entity%20Framework-Core-orange.svg)](https://docs.microsoft.com/en-us/ef/)
-[![Version](https://img.shields.io/badge/Version-1.3.0-blue.svg)](README.md)
+[![Version](https://img.shields.io/badge/Version-1.4.0-blue.svg)](README.md)
 [![License](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
 
 **MARTE** es un sistema de gestión de asistencias desarrollado para Nueva Acrópolis, con instalación automatizada, LocalDB embebido y arquitectura Clean Architecture.
 
-> **Versión 1.3.0** - Instalación Zero-Config • Dashboard en tiempo real • Sistema de Auditoría • Reportes avanzados
+> **Versión 1.4.0** - Reportes Jerárquicos Detallados • Actualización Automática • PDF Unificados • Código Optimizado
 
 > 📖 **[Ver documentación completa →](./README-COMPLETO.md)** (versión extendida con diagramas, código y detalles técnicos)
 

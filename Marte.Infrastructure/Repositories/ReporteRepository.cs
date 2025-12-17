@@ -324,5 +324,139 @@ namespace Marte.Infrastructure.Repositories
 
             return result;
         }
+
+        public async Task<IEnumerable<ReporteHistorialIndividualBusqueda>> GetHistorialIndividualBusquedaUnificadaAsync(string busqueda, DateTime fechaInicio, DateTime fechaFin)
+        {
+            if (string.IsNullOrWhiteSpace(busqueda))
+                return new List<ReporteHistorialIndividualBusqueda>();
+
+            // Normalizar el texto de búsqueda (remover tildes)
+            var busquedaNormalizada = RemoverTildes(busqueda.ToLower().Trim());
+
+            // Buscar en asistentes por DNI, nombre o apellido (con normalización)
+            var asistentes = await _context.Asistentes
+                .Include(a => a.Categoria)
+                .Include(a => a.Asistencias.Where(ast => ast.Fecha.Date >= fechaInicio.Date && ast.Fecha.Date <= fechaFin.Date))
+                .Where(a => a.Estado)
+                .ToListAsync();
+
+            var asistentesFiltrados = asistentes
+                .Where(a => 
+                    a.DNI.Contains(busqueda, StringComparison.OrdinalIgnoreCase) ||
+                    RemoverTildes(a.Nombres.ToLower()).Contains(busquedaNormalizada) ||
+                    RemoverTildes(a.Apellidos.ToLower()).Contains(busquedaNormalizada))
+                .ToList();
+
+            var resultado = new List<ReporteHistorialIndividualBusqueda>();
+
+            foreach (var asistente in asistentesFiltrados)
+            {
+                var asistencias = asistente.Asistencias
+                    .OrderByDescending(a => a.Fecha)
+                    .ToList();
+
+                var totalDias = asistencias.Count;
+
+                foreach (var asistencia in asistencias)
+                {
+                    resultado.Add(new ReporteHistorialIndividualBusqueda
+                    {
+                        DNI = asistente.DNI,
+                        NombreCompleto = $"{asistente.Apellidos}, {asistente.Nombres}",
+                        Categoria = asistente.Categoria.Nombre,
+                        Fecha = asistencia.Fecha,
+                        HoraIngreso = asistencia.HoraIngreso.TimeOfDay,
+                        HoraSalida = asistencia.HoraSalida?.TimeOfDay,
+                        HastaCierre = asistencia.HastaCierre,
+                        Observacion = asistencia.Observacion
+                    });
+                }
+            }
+
+            return resultado;
+        }
+
+        public async Task<IEnumerable<ReporteCategoriaJerarquico>> GetReporteCategoriaJerarquicoAsync(DateTime fechaInicio, DateTime fechaFin)
+        {
+            var asistencias = await _context.Asistencias
+                .Include(a => a.Asistente)
+                    .ThenInclude(ast => ast.Categoria)
+                .Where(a => a.Fecha.Date >= fechaInicio.Date && a.Fecha.Date <= fechaFin.Date)
+                .ToListAsync();
+
+            // Definir jerarquía de categorías
+            var jerarquia = new Dictionary<string, (int Orden, string[] Variantes)>
+            {
+                { "Jefe de Filial", (1, new[] { "Jefe de Filial" }) },
+                { "Jefe de Filial LM", (2, new[] { "Jefe de Filial LM" }) },
+                { "Jefe de Filial LN", (3, new[] { "Jefe de Filial LN" }) },
+                { "Secretarios", (4, new[] { "Secretarios", "Secretario" }) },
+                { "G de S", (5, new[] { "G de S", "GS", "Grupo de Seguridad" }) },
+                { "GG.FF", (6, new[] { "GG.FF", "GGFF" }) },
+                { "GG.MM", (7, new[] { "GG.MM", "GGMM" }) },
+                { "Miembros", (8, new[] { "Miembros" }) },
+                { "Miembros LM", (9, new[] { "Miembros LM" }) },
+                { "Miembros LN", (10, new[] { "Miembros LN" }) },
+                { "Filosofía", (11, new[] { "Filosofía", "Filosofia" }) },
+                { "Otros", (12, new[] { "Otros", "Otro" }) }
+            };
+
+            // Mapear categorías a su jerarquía
+            var categoriasConJerarquia = asistencias
+                .Select(a => new
+                {
+                    Asistencia = a,
+                    CategoriaJerarquica = ObtenerCategoriaJerarquica(a.Asistente.Categoria.Nombre, jerarquia)
+                })
+                .ToList();
+
+            // Definir categorías de Fuerzas Vivas
+            var fuerzasVivas = new HashSet<string> { "G de S", "GG.FF", "GG.MM" };
+
+            // Agrupar por categoría jerárquica
+            var resultado = categoriasConJerarquia
+                .GroupBy(x => x.CategoriaJerarquica)
+                .Select(g => new ReporteCategoriaJerarquico
+                {
+                    CategoriaJerarquica = g.Key.Nombre,
+                    Orden = g.Key.Orden,
+                    GrupoAgrupacion = fuerzasVivas.Contains(g.Key.Nombre) ? "Fuerzas Vivas" : null,
+                    TotalAsistencias = g.Count(),
+                    TotalHastaCierre = g.Count(x => x.Asistencia.HastaCierre),
+                    PorcentajeCierre = g.Count() > 0
+                        ? Math.Round((double)g.Count(x => x.Asistencia.HastaCierre) / g.Count() * 100, 2)
+                        : 0
+                })
+                .OrderBy(r => r.Orden)
+                .ToList();
+
+            return resultado;
+        }
+
+        // Método auxiliar para normalizar texto (remover tildes)
+        private string RemoverTildes(string texto)
+        {
+            var textoNormalizado = texto.Normalize(System.Text.NormalizationForm.FormD);
+            var chars = textoNormalizado.Where(c => System.Globalization.CharUnicodeInfo.GetUnicodeCategory(c) != System.Globalization.UnicodeCategory.NonSpacingMark).ToArray();
+            return new string(chars).Normalize(System.Text.NormalizationForm.FormC);
+        }
+
+        // Método auxiliar para obtener categoría jerárquica
+        private (string Nombre, int Orden) ObtenerCategoriaJerarquica(string categoriaNombre, Dictionary<string, (int Orden, string[] Variantes)> jerarquia)
+        {
+            foreach (var kvp in jerarquia)
+            {
+                foreach (var variante in kvp.Value.Variantes)
+                {
+                    if (categoriaNombre.Equals(variante, StringComparison.OrdinalIgnoreCase))
+                    {
+                        return (kvp.Key, kvp.Value.Orden);
+                    }
+                }
+            }
+
+            // Si no se encuentra, asignar a "Otros"
+            return ("Otros", 12);
+        }
     }
 }

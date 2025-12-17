@@ -43,6 +43,20 @@ namespace Marte.Infrastructure.Repositories
                 .ToListAsync();
         }
 
+        public async Task<IEnumerable<Asistencia>> GetByFechaRangoAsync(DateTime fechaInicio, DateTime fechaFin)
+        {
+            var inicio = fechaInicio.Date;
+            var fin = fechaFin.Date;
+            return await _context.Asistencias
+                .Include(a => a.Asistente)
+                    .ThenInclude(ast => ast.Categoria)
+                .Where(a => a.Fecha.Date >= inicio && a.Fecha.Date <= fin)
+                .OrderBy(a => a.Fecha)
+                .ThenBy(a => a.Asistente.Apellidos)
+                .ThenBy(a => a.Asistente.Nombres)
+                .ToListAsync();
+        }
+
         public async Task<IEnumerable<Asistencia>> GetAsistenciasPresentesAsync()
         {
             var hoy = DateTime.Today;

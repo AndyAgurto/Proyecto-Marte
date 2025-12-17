@@ -21,6 +21,7 @@ namespace Marte.WPF.ViewModels
         private string _dniBusqueda = string.Empty;
         private string _nombresBusqueda = string.Empty;
         private string _apellidosBusqueda = string.Empty;
+        private string _busquedaUnificada = string.Empty;
         private TimeSpan _horaPuntualidad = new TimeSpan(19, 30, 0);
         private int _topConstantes = 10;
 
@@ -29,6 +30,8 @@ namespace Marte.WPF.ViewModels
         private ObservableCollection<ReportePorCategoria> _totalesPorCategoria;
         private ObservableCollection<ReportePorGrupo> _totalesPorGrupo;
         private ObservableCollection<ReporteHistorialIndividual> _historialIndividual;
+        private ObservableCollection<ReporteHistorialIndividualBusqueda> _historialIndividualBusqueda;
+        private ObservableCollection<ReporteCategoriaJerarquico> _reporteCategoriaJerarquico;
 
         // Collections para paneles analíticos
         private ObservableCollection<ReportePuntualidad> _reportePuntualidad;
@@ -50,6 +53,8 @@ namespace Marte.WPF.ViewModels
             _totalesPorCategoria = new ObservableCollection<ReportePorCategoria>();
             _totalesPorGrupo = new ObservableCollection<ReportePorGrupo>();
             _historialIndividual = new ObservableCollection<ReporteHistorialIndividual>();
+            _historialIndividualBusqueda = new ObservableCollection<ReporteHistorialIndividualBusqueda>();
+            _reporteCategoriaJerarquico = new ObservableCollection<ReporteCategoriaJerarquico>();
             _reportePuntualidad = new ObservableCollection<ReportePuntualidad>();
             _reporteHastaCierre = new ObservableCollection<ReporteHastaCierre>();
             _reportePorGrupoDetalle = new ObservableCollection<ReporteAsistenciaGrupoDetalle>();
@@ -58,9 +63,13 @@ namespace Marte.WPF.ViewModels
             // Comandos de consulta
             ConsultarTotalesDiariosCommand = new RelayCommand(() => ExecuteConsultarTotalesDiarios(null));
             ConsultarPorCategoriaCommand = new RelayCommand(() => ExecuteConsultarPorCategoria(null));
+            ConsultarCategoriaJerarquicoCommand = new RelayCommand(() => ExecuteConsultarCategoriaJerarquico(null));
             ConsultarPorGrupoCommand = new RelayCommand(() => ExecuteConsultarPorGrupo(null));
             ConsultarHistorialPorDNICommand = new RelayCommand(() => ExecuteConsultarHistorialPorDNI(null), () => !string.IsNullOrWhiteSpace(DNIBusqueda));
             ConsultarHistorialPorNombreCommand = new RelayCommand(() => ExecuteConsultarHistorialPorNombre(null), () => CanConsultarPorNombre(null));
+            ConsultarHistorialBusquedaUnificadaCommand = new RelayCommand(() => ExecuteConsultarHistorialBusquedaUnificada(null), () => !string.IsNullOrWhiteSpace(BusquedaUnificada));
+            ExportarHistorialBusquedaExcelCommand = new RelayCommand(() => ExecuteExportarHistorialBusquedaExcel(null), () => HistorialIndividualBusqueda?.Any() == true);
+            ExportarHistorialBusquedaPDFCommand = new RelayCommand(() => ExecuteExportarHistorialBusquedaPDF(null), () => HistorialIndividualBusqueda?.Any() == true);
 
             // Comandos de paneles analíticos
             ConsultarPuntualidadCommand = new RelayCommand(() => ExecuteConsultarPuntualidad(null));
@@ -79,6 +88,12 @@ namespace Marte.WPF.ViewModels
             
             ExportarPuntualidadExcelCommand = new RelayCommand(() => ExecuteExportarPuntualidadExcel(null));
             ExportarHastaCierreExcelCommand = new RelayCommand(() => ExecuteExportarHastaCierreExcel(null));
+            
+            // Comandos de exportación adicionales
+            ExportarAsistentesTemporalesExcelCommand = new RelayCommand(() => ExecuteExportarAsistentesTemporalesExcel(null));
+            ExportarAsistentesTemporalesPDFCommand = new RelayCommand(() => ExecuteExportarAsistentesTemporalesPDF(null));
+            ExportarCategoriaJerarquicaExcelCommand = new RelayCommand(() => ExecuteExportarCategoriaJerarquicaExcel(null), () => ReporteCategoriaJerarquico?.Any() == true);
+            ExportarCategoriaJerarquicaPDFCommand = new RelayCommand(() => ExecuteExportarCategoriaJerarquicaPDF(null), () => ReporteCategoriaJerarquico?.Any() == true);
             ExportarPorGrupoDetalleExcelCommand = new RelayCommand(() => ExecuteExportarPorGrupoDetalleExcel(null));
             ExportarTopConstantesExcelCommand = new RelayCommand(() => ExecuteExportarTopConstantesExcel(null));
         }
@@ -127,6 +142,16 @@ namespace Marte.WPF.ViewModels
             }
         }
 
+        public string BusquedaUnificada
+        {
+            get => _busquedaUnificada;
+            set
+            {
+                SetProperty(ref _busquedaUnificada, value);
+                System.Windows.Input.CommandManager.InvalidateRequerySuggested();
+            }
+        }
+
         public TimeSpan HoraPuntualidad
         {
             get => _horaPuntualidad;
@@ -161,6 +186,18 @@ namespace Marte.WPF.ViewModels
         {
             get => _historialIndividual;
             set => SetProperty(ref _historialIndividual, value);
+        }
+
+        public ObservableCollection<ReporteHistorialIndividualBusqueda> HistorialIndividualBusqueda
+        {
+            get => _historialIndividualBusqueda;
+            set => SetProperty(ref _historialIndividualBusqueda, value);
+        }
+
+        public ObservableCollection<ReporteCategoriaJerarquico> ReporteCategoriaJerarquico
+        {
+            get => _reporteCategoriaJerarquico;
+            set => SetProperty(ref _reporteCategoriaJerarquico, value);
         }
 
         public ObservableCollection<ReportePuntualidad> ReportePuntualidad
@@ -211,9 +248,13 @@ namespace Marte.WPF.ViewModels
 
         public ICommand ConsultarTotalesDiariosCommand { get; }
         public ICommand ConsultarPorCategoriaCommand { get; }
+        public ICommand ConsultarCategoriaJerarquicoCommand { get; }
         public ICommand ConsultarPorGrupoCommand { get; }
         public ICommand ConsultarHistorialPorDNICommand { get; }
         public ICommand ConsultarHistorialPorNombreCommand { get; }
+        public ICommand ConsultarHistorialBusquedaUnificadaCommand { get; }
+        public ICommand ExportarHistorialBusquedaExcelCommand { get; }
+        public ICommand ExportarHistorialBusquedaPDFCommand { get; }
 
         public ICommand ConsultarPuntualidadCommand { get; }
         public ICommand ConsultarHastaCierreCommand { get; }
@@ -231,6 +272,11 @@ namespace Marte.WPF.ViewModels
         public ICommand ExportarHastaCierreExcelCommand { get; }
         public ICommand ExportarPorGrupoDetalleExcelCommand { get; }
         public ICommand ExportarTopConstantesExcelCommand { get; }
+        
+        public ICommand ExportarAsistentesTemporalesExcelCommand { get; }
+        public ICommand ExportarAsistentesTemporalesPDFCommand { get; }
+        public ICommand ExportarCategoriaJerarquicaExcelCommand { get; }
+        public ICommand ExportarCategoriaJerarquicaPDFCommand { get; }
 
         #endregion
 
@@ -389,6 +435,147 @@ namespace Marte.WPF.ViewModels
             catch (Exception ex)
             {
                 MessageBox.Show($"Error al consultar historial: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                StatusMessage = "Error en la consulta";
+            }
+            finally
+            {
+                IsBusy = false;
+            }
+        }
+
+        private async void ExecuteConsultarHistorialBusquedaUnificada(object? parameter)
+        {
+            try
+            {
+                IsBusy = true;
+                StatusMessage = $"Buscando historial: {BusquedaUnificada}...";
+
+                var datos = await _reporteService.GetHistorialIndividualBusquedaUnificadaAsync(BusquedaUnificada, FechaInicio, FechaFin);
+                
+                HistorialIndividualBusqueda.Clear();
+                foreach (var item in datos)
+                {
+                    HistorialIndividualBusqueda.Add(item);
+                }
+
+                if (HistorialIndividualBusqueda.Count == 0)
+                {
+                    MessageBox.Show($"No se encontró historial para: {BusquedaUnificada}", "Información", MessageBoxButton.OK, MessageBoxImage.Information);
+                    StatusMessage = "No se encontraron registros";
+                }
+                else
+                {
+                    var totalAsistentes = HistorialIndividualBusqueda.Select(h => h.DNI).Distinct().Count();
+                    StatusMessage = $"Se encontraron {HistorialIndividualBusqueda.Count} asistencias de {totalAsistentes} asistente(s)";
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Error al buscar historial: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                StatusMessage = "Error en la búsqueda";
+            }
+            finally
+            {
+                IsBusy = false;
+            }
+        }
+
+        private async void ExecuteExportarHistorialBusquedaExcel(object? parameter)
+        {
+            try
+            {
+                if (HistorialIndividualBusqueda?.Any() != true)
+                {
+                    MessageBox.Show("No hay datos para exportar", "Información", MessageBoxButton.OK, MessageBoxImage.Information);
+                    return;
+                }
+
+                var saveDialog = new Microsoft.Win32.SaveFileDialog
+                {
+                    Filter = "Excel Files|*.xlsx",
+                    FileName = $"HistorialBusqueda_{BusquedaUnificada}_{DateTime.Now:yyyyMMdd}.xlsx"
+                };
+
+                if (saveDialog.ShowDialog() == true)
+                {
+                    IsBusy = true;
+                    StatusMessage = "Exportando a Excel...";
+                    
+                    var rutaArchivo = await _reporteService.ExportarHistorialBusquedaExcelAsync(BusquedaUnificada, FechaInicio, FechaFin, saveDialog.FileName);
+                    
+                    StatusMessage = "Exportación completada exitosamente";
+                    MessageBox.Show($"Archivo generado:\n{rutaArchivo}", "Exportación exitosa", MessageBoxButton.OK, MessageBoxImage.Information);
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Error al exportar: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                StatusMessage = "Error en la exportación";
+            }
+            finally
+            {
+                IsBusy = false;
+            }
+        }
+
+        private async void ExecuteExportarHistorialBusquedaPDF(object? parameter)
+        {
+            try
+            {
+                if (HistorialIndividualBusqueda?.Any() != true)
+                {
+                    MessageBox.Show("No hay datos para exportar", "Información", MessageBoxButton.OK, MessageBoxImage.Information);
+                    return;
+                }
+
+                var saveDialog = new Microsoft.Win32.SaveFileDialog
+                {
+                    Filter = "Archivos PDF|*.pdf",
+                    FileName = $"HistorialBusqueda_{BusquedaUnificada}_{DateTime.Now:yyyyMMdd}.pdf"
+                };
+
+                if (saveDialog.ShowDialog() == true)
+                {
+                    IsBusy = true;
+                    StatusMessage = "Exportando a PDF...";
+                    
+                    var rutaArchivo = await _reporteService.ExportarHistorialBusquedaPDFAsync(BusquedaUnificada, FechaInicio, FechaFin, saveDialog.FileName);
+                    
+                    StatusMessage = "Exportación completada exitosamente";
+                    MessageBox.Show($"Archivo generado:\n{rutaArchivo}", "Exportación exitosa", MessageBoxButton.OK, MessageBoxImage.Information);
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Error al exportar: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                StatusMessage = "Error en la exportación";
+            }
+            finally
+            {
+                IsBusy = false;
+            }
+        }
+
+        private async void ExecuteConsultarCategoriaJerarquico(object? parameter)
+        {
+            try
+            {
+                IsBusy = true;
+                StatusMessage = "Consultando reporte jerárquico de categorías...";
+
+                var datos = await _reporteService.GetReporteCategoriaJerarquicoAsync(FechaInicio, FechaFin);
+                
+                ReporteCategoriaJerarquico.Clear();
+                foreach (var item in datos)
+                {
+                    ReporteCategoriaJerarquico.Add(item);
+                }
+
+                StatusMessage = $"Se encontraron {ReporteCategoriaJerarquico.Count} categorías";
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Error al consultar reporte jerárquico: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
                 StatusMessage = "Error en la consulta";
             }
             finally
@@ -862,6 +1049,138 @@ namespace Marte.WPF.ViewModels
                     StatusMessage = "Exportando a Excel...";
 
                     await _reporteService.ExportarTopConstantesExcelAsync(FechaInicio, FechaFin, TopConstantes, saveDialog.FileName);
+                    
+                    MessageBox.Show($"Reporte exportado exitosamente:\n{saveDialog.FileName}", "Exportación Exitosa", MessageBoxButton.OK, MessageBoxImage.Information);
+                    StatusMessage = "Exportación completada";
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Error al exportar: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                StatusMessage = "Error en la exportación";
+            }
+            finally
+            {
+                IsBusy = false;
+            }
+        }
+
+        private async void ExecuteExportarAsistentesTemporalesExcel(object? parameter)
+        {
+            try
+            {
+                var saveDialog = new Microsoft.Win32.SaveFileDialog
+                {
+                    FileName = $"AsistentesTemporales_{FechaInicio:yyyyMMdd}_{FechaFin:yyyyMMdd}.xlsx",
+                    Filter = "Archivos Excel (*.xlsx)|*.xlsx",
+                    Title = "Exportar Asistentes Temporales a Excel"
+                };
+
+                if (saveDialog.ShowDialog() == true)
+                {
+                    IsBusy = true;
+                    StatusMessage = "Exportando asistentes temporales...";
+
+                    await _reporteService.ExportarAsistentesTemporalesExcelAsync(FechaInicio, FechaFin, saveDialog.FileName);
+                    
+                    MessageBox.Show($"Reporte exportado exitosamente:\n{saveDialog.FileName}", "Exportación Exitosa", MessageBoxButton.OK, MessageBoxImage.Information);
+                    StatusMessage = "Exportación completada";
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Error al exportar: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                StatusMessage = "Error en la exportación";
+            }
+            finally
+            {
+                IsBusy = false;
+            }
+        }
+
+        private async void ExecuteExportarAsistentesTemporalesPDF(object? parameter)
+        {
+            try
+            {
+                var saveDialog = new Microsoft.Win32.SaveFileDialog
+                {
+                    FileName = $"AsistentesTemporales_{FechaInicio:yyyyMMdd}_{FechaFin:yyyyMMdd}.pdf",
+                    Filter = "Archivos PDF (*.pdf)|*.pdf",
+                    Title = "Exportar Asistentes Temporales a PDF"
+                };
+
+                if (saveDialog.ShowDialog() == true)
+                {
+                    IsBusy = true;
+                    StatusMessage = "Exportando asistentes temporales...";
+
+                    await _reporteService.ExportarAsistentesTemporalesPDFAsync(FechaInicio, FechaFin, saveDialog.FileName);
+                    
+                    MessageBox.Show($"Reporte exportado exitosamente:\n{saveDialog.FileName}", "Exportación Exitosa", MessageBoxButton.OK, MessageBoxImage.Information);
+                    StatusMessage = "Exportación completada";
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Error al exportar: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                StatusMessage = "Error en la exportación";
+            }
+            finally
+            {
+                IsBusy = false;
+            }
+        }
+
+        private async void ExecuteExportarCategoriaJerarquicaExcel(object? parameter)
+        {
+            try
+            {
+                var saveDialog = new Microsoft.Win32.SaveFileDialog
+                {
+                    FileName = $"CategoriaJerarquica_{FechaInicio:yyyyMMdd}_{FechaFin:yyyyMMdd}.xlsx",
+                    Filter = "Archivos Excel (*.xlsx)|*.xlsx",
+                    Title = "Exportar Categoría Jerárquica a Excel"
+                };
+
+                if (saveDialog.ShowDialog() == true)
+                {
+                    IsBusy = true;
+                    StatusMessage = "Exportando a Excel...";
+
+                    await _reporteService.ExportarCategoriaJerarquicaExcelAsync(FechaInicio, FechaFin, saveDialog.FileName);
+                    
+                    MessageBox.Show($"Reporte exportado exitosamente:\n{saveDialog.FileName}", "Exportación Exitosa", MessageBoxButton.OK, MessageBoxImage.Information);
+                    StatusMessage = "Exportación completada";
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Error al exportar: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                StatusMessage = "Error en la exportación";
+            }
+            finally
+            {
+                IsBusy = false;
+            }
+        }
+
+        private async void ExecuteExportarCategoriaJerarquicaPDF(object? parameter)
+        {
+            try
+            {
+                var saveDialog = new Microsoft.Win32.SaveFileDialog
+                {
+                    FileName = $"CategoriaJerarquica_{FechaInicio:yyyyMMdd}_{FechaFin:yyyyMMdd}.pdf",
+                    Filter = "Archivos PDF (*.pdf)|*.pdf",
+                    Title = "Exportar Categoría Jerárquica a PDF"
+                };
+
+                if (saveDialog.ShowDialog() == true)
+                {
+                    IsBusy = true;
+                    StatusMessage = "Exportando a PDF...";
+
+                    await _reporteService.ExportarCategoriaJerarquicaPDFAsync(FechaInicio, FechaFin, saveDialog.FileName);
                     
                     MessageBox.Show($"Reporte exportado exitosamente:\n{saveDialog.FileName}", "Exportación Exitosa", MessageBoxButton.OK, MessageBoxImage.Information);
                     StatusMessage = "Exportación completada";

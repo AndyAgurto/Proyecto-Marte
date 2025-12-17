@@ -20,6 +20,7 @@ namespace Marte.WPF.ViewModels
         private string _dniBusqueda = string.Empty;
         private string _observacionSalida = string.Empty;
         private int _totalPresentes;
+        private string _busquedaAsistencia = string.Empty;
 
         public AsistenciaControlViewModel(
             IAsistenciaService asistenciaService,
@@ -33,9 +34,12 @@ namespace Marte.WPF.ViewModels
 
             // Comandos
             RegistrarIngresoCommand = new RelayCommand(() => ExecuteRegistrarIngreso(null), () => CanRegistrarIngreso(null));
+            RegistrarIngresoDinamicoCommand = new RelayCommand(() => ExecuteRegistrarIngresoDinamico(null), () => CanRegistrarIngreso(null));
+            RegistrarIngresoTemporalCommand = new RelayCommand(() => ExecuteRegistrarIngresoTemporal(null));
             RegistrarSalidaCommand = new RelayCommand(() => ExecuteRegistrarSalida(null), () => CanRegistrarSalida(null));
             AplicarCierreCommand = new RelayCommand(() => ExecuteAplicarCierre(null));
             ActualizarCommand = new RelayCommand(() => ExecuteActualizar(null));
+            BuscarAsistenciaCommand = new RelayCommand(() => ExecuteBuscarAsistencia(null));
 
             // Timer para actualización automática cada 30 segundos
             _refreshTimer = new DispatcherTimer
@@ -95,6 +99,12 @@ namespace Marte.WPF.ViewModels
             set => SetProperty(ref _totalPresentes, value);
         }
 
+        public string BusquedaAsistencia
+        {
+            get => _busquedaAsistencia;
+            set => SetProperty(ref _busquedaAsistencia, value);
+        }
+
         public bool CanSalir => SelectedAsistenciaPresente != null;
 
         #endregion
@@ -102,9 +112,12 @@ namespace Marte.WPF.ViewModels
         #region Commands
 
         public ICommand RegistrarIngresoCommand { get; }
+        public ICommand RegistrarIngresoDinamicoCommand { get; }
+        public ICommand RegistrarIngresoTemporalCommand { get; }
         public ICommand RegistrarSalidaCommand { get; }
         public ICommand AplicarCierreCommand { get; }
         public ICommand ActualizarCommand { get; }
+        public ICommand BuscarAsistenciaCommand { get; }
 
         #endregion
 
@@ -274,6 +287,85 @@ namespace Marte.WPF.ViewModels
             catch (Exception ex)
             {
                 MessageBox.Show($"Error al cargar historial: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+        }
+
+        private async void ExecuteRegistrarIngresoDinamico(object? parameter)
+        {
+            try
+            {
+                var result = await _asistenciaService.RegistrarIngresoDinamicoAsync(DNIBusqueda.Trim(), _currentUser);
+
+                if (result.Success)
+                {
+                    MessageBox.Show(result.Message, "Ingreso Registrado", MessageBoxButton.OK, MessageBoxImage.Information);
+                    DNIBusqueda = string.Empty;
+                    await LoadAsistenciasPresentes();
+                    await LoadHistorialDia();
+                }
+                else
+                {
+                    MessageBox.Show(result.Message, "Aviso", MessageBoxButton.OK, MessageBoxImage.Warning);
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Error al registrar ingreso: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+        }
+
+        private async void ExecuteRegistrarIngresoTemporal(object? parameter)
+        {
+            try
+            {
+                // Mostrar diálogo para capturar nombres y apellidos
+                var dialog = new Views.RegistroTemporalDialog();
+                if (dialog.ShowDialog() == true)
+                {
+                    var result = await _asistenciaService.RegistrarIngresoTemporalAsync(
+                        dialog.Nombres, 
+                        dialog.Apellidos, 
+                        _currentUser);
+
+                    if (result.Success)
+                    {
+                        MessageBox.Show(result.Message, "Visitante Registrado", MessageBoxButton.OK, MessageBoxImage.Information);
+                        await LoadAsistenciasPresentes();
+                        await LoadHistorialDia();
+                    }
+                    else
+                    {
+                        MessageBox.Show(result.Message, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Error al registrar visitante: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+        }
+
+        private async void ExecuteBuscarAsistencia(object? parameter)
+        {
+            try
+            {
+                if (string.IsNullOrWhiteSpace(BusquedaAsistencia))
+                {
+                    await LoadHistorialDia();
+                    return;
+                }
+
+                var asistencias = await _asistenciaService.BuscarAsistenciasPorNombreAsync(BusquedaAsistencia, DateTime.Today);
+                
+                HistorialDia.Clear();
+                foreach (var asistencia in asistencias)
+                {
+                    HistorialDia.Add(asistencia);
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Error al buscar asistencias: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
 

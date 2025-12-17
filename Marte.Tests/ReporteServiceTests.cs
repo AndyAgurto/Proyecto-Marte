@@ -75,7 +75,8 @@ namespace Marte.Tests
             // Arrange
             using var context = new MarteDbContext(_options);
             var reporteRepo = new ReporteRepository(context);
-            var service = new ReporteService(reporteRepo);
+            var asistenciaRepo = new AsistenciaRepository(context);
+            var service = new ReporteService(reporteRepo, asistenciaRepo);
 
             var fechaInicio = DateTime.Today.AddDays(-7);
             var fechaFin = DateTime.Today;
@@ -94,7 +95,8 @@ namespace Marte.Tests
             // Arrange
             using var context = new MarteDbContext(_options);
             var reporteRepo = new ReporteRepository(context);
-            var service = new ReporteService(reporteRepo);
+            var asistenciaRepo = new AsistenciaRepository(context);
+            var service = new ReporteService(reporteRepo, asistenciaRepo);
 
             var fechaInicio = DateTime.Today.AddDays(-7);
             var fechaFin = DateTime.Today;
@@ -113,7 +115,8 @@ namespace Marte.Tests
             // Arrange
             using var context = new MarteDbContext(_options);
             var reporteRepo = new ReporteRepository(context);
-            var service = new ReporteService(reporteRepo);
+            var asistenciaRepo = new AsistenciaRepository(context);
+            var service = new ReporteService(reporteRepo, asistenciaRepo);
 
             var fechaInicio = DateTime.Today.AddDays(-7);
             var fechaFin = DateTime.Today;
@@ -132,7 +135,8 @@ namespace Marte.Tests
             // Arrange
             using var context = new MarteDbContext(_options);
             var reporteRepo = new ReporteRepository(context);
-            var service = new ReporteService(reporteRepo);
+            var asistenciaRepo = new AsistenciaRepository(context);
+            var service = new ReporteService(reporteRepo, asistenciaRepo);
 
             var fechaInicio = DateTime.Today.AddDays(-30);
             var fechaFin = DateTime.Today;
@@ -151,7 +155,8 @@ namespace Marte.Tests
             // Arrange
             using var context = new MarteDbContext(_options);
             var reporteRepo = new ReporteRepository(context);
-            var service = new ReporteService(reporteRepo);
+            var asistenciaRepo = new AsistenciaRepository(context);
+            var service = new ReporteService(reporteRepo, asistenciaRepo);
 
             var fechaInicio = DateTime.Today.AddDays(-7);
             var fechaFin = DateTime.Today;
@@ -170,7 +175,8 @@ namespace Marte.Tests
             // Arrange
             using var context = new MarteDbContext(_options);
             var reporteRepo = new ReporteRepository(context);
-            var service = new ReporteService(reporteRepo);
+            var asistenciaRepo = new AsistenciaRepository(context);
+            var service = new ReporteService(reporteRepo, asistenciaRepo);
 
             var fechaInicio = DateTime.Today.AddDays(-7);
             var fechaFin = DateTime.Today;
@@ -188,7 +194,8 @@ namespace Marte.Tests
             // Arrange
             using var context = new MarteDbContext(_options);
             var reporteRepo = new ReporteRepository(context);
-            var service = new ReporteService(reporteRepo);
+            var asistenciaRepo = new AsistenciaRepository(context);
+            var service = new ReporteService(reporteRepo, asistenciaRepo);
 
             var fechaInicio = DateTime.Today.AddDays(-30);
             var fechaFin = DateTime.Today;
@@ -207,7 +214,8 @@ namespace Marte.Tests
             // Arrange
             using var context = new MarteDbContext(_options);
             var reporteRepo = new ReporteRepository(context);
-            var service = new ReporteService(reporteRepo);
+            var asistenciaRepo = new AsistenciaRepository(context);
+            var service = new ReporteService(reporteRepo, asistenciaRepo);
 
             var fechaInicio = DateTime.Today.AddDays(-7);
             var fechaFin = DateTime.Today;

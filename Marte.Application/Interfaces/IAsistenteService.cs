@@ -26,5 +26,6 @@ namespace Marte.Application.Interfaces
         Task<(bool Success, string Message)> InactivarAsistenteAsync(Guid id, string usuarioActual);
         Task<(bool Success, string Message)> ActivarAsistenteAsync(Guid id, string usuarioActual);
         Task<bool> ValidarDNIUnicoAsync(string dni, Guid? excludeId = null);
+        Task<IEnumerable<Asistente>> BuscarAsistentesNormalizadoAsync(string busqueda);
     }
 }

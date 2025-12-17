@@ -299,5 +299,28 @@ namespace Marte.Application.Services
         {
             return !await _asistenteRepository.ExisteDNIAsync(dni, excludeId);
         }
+
+        public async Task<IEnumerable<Asistente>> BuscarAsistentesNormalizadoAsync(string busqueda)
+        {
+            if (string.IsNullOrWhiteSpace(busqueda))
+                return new List<Asistente>();
+
+            var asistentes = await _asistenteRepository.GetActivosAsync();
+            var busquedaNormalizada = RemoverTildes(busqueda.ToLower().Trim());
+
+            return asistentes.Where(a =>
+                a.DNI.Contains(busqueda, StringComparison.OrdinalIgnoreCase) ||
+                RemoverTildes(a.Nombres.ToLower()).Contains(busquedaNormalizada) ||
+                RemoverTildes(a.Apellidos.ToLower()).Contains(busquedaNormalizada) ||
+                RemoverTildes($"{a.Nombres} {a.Apellidos}".ToLower()).Contains(busquedaNormalizada)
+            ).ToList();
+        }
+
+        private string RemoverTildes(string texto)
+        {
+            var textoNormalizado = texto.Normalize(System.Text.NormalizationForm.FormD);
+            var chars = textoNormalizado.Where(c => System.Globalization.CharUnicodeInfo.GetUnicodeCategory(c) != System.Globalization.UnicodeCategory.NonSpacingMark).ToArray();
+            return new string(chars).Normalize(System.Text.NormalizationForm.FormC);
+        }
     }
 }

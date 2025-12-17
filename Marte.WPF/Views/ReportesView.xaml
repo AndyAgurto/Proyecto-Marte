@@ -201,7 +201,7 @@
         <!-- TabControl Principal -->
         <TabControl Grid.Row="2">
             <!-- TAB 1: Consultas Básicas -->
-            <TabItem Header="📊 Consultas Básicas">
+            <TabItem Header="Consultas Básicas">
                 <ScrollViewer VerticalScrollBarVisibility="Auto">
                     <StackPanel Margin="10">
                         <!-- Totales Diarios -->
@@ -356,25 +356,25 @@
                             </Grid>
                         </Border>
 
-                        <!-- Por Categoría -->
+                        <!-- Reporte Jerárquico de Categorías -->
                         <Border Background="#CC000000" BorderBrush="#8B0000" BorderThickness="2" CornerRadius="8" Padding="15" Margin="0,0,0,15">
                             <Grid>
                                 <Grid.RowDefinitions>
                                     <RowDefinition Height="Auto"/>
                                     <RowDefinition Height="Auto"/>
-                                    <RowDefinition Height="200"/>
+                                    <RowDefinition Height="350"/>
                                 </Grid.RowDefinitions>
 
-                                <TextBlock Grid.Row="0" Text="POR CATEGORÍA" FontSize="16" FontWeight="Bold" Foreground="White" Margin="0,0,0,10"/>
+                                <TextBlock Grid.Row="0" Text="REPORTE JERÁRQUICO POR CATEGORÍA" FontSize="16" FontWeight="Bold" Foreground="White" Margin="0,0,0,10"/>
 
                                 <WrapPanel Grid.Row="1" Margin="0,0,0,10">
-                                    <Button Content="Consultar" Command="{Binding ConsultarPorCategoriaCommand}" Style="{StaticResource ActionButtonStyle}"/>
-                                    <Button Content="Exportar Excel" Command="{Binding ExportarPorCategoriaExcelCommand}" Style="{StaticResource ActionButtonStyle}"/>
-                                    <Button Content="Exportar PDF" Command="{Binding ExportarPorCategoriaPDFCommand}" Style="{StaticResource ActionButtonStyle}"/>
+                                    <Button Content="Consultar" Command="{Binding ConsultarCategoriaJerarquicoCommand}" Style="{StaticResource ActionButtonStyle}"/>
+                                    <Button Content="Exportar Excel" Command="{Binding ExportarCategoriaJerarquicaExcelCommand}" Style="{StaticResource ActionButtonStyle}"/>
+                                    <Button Content="Exportar PDF" Command="{Binding ExportarCategoriaJerarquicaPDFCommand}" Style="{StaticResource ActionButtonStyle}"/>
                                 </WrapPanel>
 
                                 <DataGrid Grid.Row="2"
-                                         ItemsSource="{Binding TotalesPorCategoria}"
+                                         ItemsSource="{Binding ReporteCategoriaJerarquico}"
                                          AutoGenerateColumns="False"
                                          CanUserAddRows="False"
                                          Background="#2D2D30"
@@ -385,10 +385,12 @@
                                          IsReadOnly="True"
                                          RowStyle="{StaticResource DataGridRowStyle}">
                                     <DataGrid.Columns>
-                                        <DataGridTextColumn Header="Categoría" Binding="{Binding Categoria}" Width="*"/>
-                                        <DataGridTextColumn Header="N°" Binding="{Binding NumeroGrupo}" Width="100"/>
-                                        <DataGridTextColumn Header="Total" Binding="{Binding Total}" Width="100"/>
-                                        <DataGridTextColumn Header="Hasta Cierre" Binding="{Binding HastaCierre}" Width="120"/>
+                                        <DataGridTextColumn Header="Orden" Binding="{Binding Orden}" Width="70"/>
+                                        <DataGridTextColumn Header="Agrupación" Binding="{Binding GrupoAgrupacion}" Width="120"/>
+                                        <DataGridTextColumn Header="Categoría" Binding="{Binding CategoriaJerarquica}" Width="*"/>
+                                        <DataGridTextColumn Header="Total Asistencias" Binding="{Binding TotalAsistencias}" Width="120"/>
+                                        <DataGridTextColumn Header="Hasta Cierre" Binding="{Binding TotalHastaCierre}" Width="100"/>
+                                        <DataGridTextColumn Header="% Cierre" Binding="{Binding PorcentajeCierre, StringFormat='{}{0:F2}%'}" Width="80"/>
                                     </DataGrid.Columns>
                                     <DataGrid.ColumnHeaderStyle>
                                         <Style TargetType="DataGridColumnHeader">
@@ -449,7 +451,7 @@
             </TabItem>
 
             <!-- TAB 2: Historial Individual -->
-            <TabItem Header="👤 Historial Individual">
+            <TabItem Header="Historial Individual">
                 <Border Background="#CC000000" BorderBrush="#8B0000" BorderThickness="2" CornerRadius="8" Padding="20" Margin="10">
                     <Grid>
                         <Grid.RowDefinitions>
@@ -460,35 +462,30 @@
 
                         <TextBlock Grid.Row="0" Text="HISTORIAL INDIVIDUAL DE ASISTENCIAS" FontSize="16" FontWeight="Bold" Foreground="White" Margin="0,0,0,15"/>
 
-                        <!-- Búsqueda -->
-                        <Grid Grid.Row="1" Margin="0,0,0,15">
-                            <Grid.RowDefinitions>
-                                <RowDefinition Height="Auto"/>
-                                <RowDefinition Height="Auto"/>
-                            </Grid.RowDefinitions>
-
-                            <!-- Búsqueda por DNI -->
-                            <StackPanel Grid.Row="0" Orientation="Horizontal" Margin="0,0,0,10">
-                                <Label Content="DNI/Código:" VerticalAlignment="Center"/>
-                                <TextBox Text="{Binding DNIBusqueda, UpdateSourceTrigger=PropertyChanged}" Width="200" VerticalAlignment="Center" Margin="10,0"/>
-                                <Button Content="Consultar" Command="{Binding ConsultarHistorialPorDNICommand}" Style="{StaticResource ActionButtonStyle}"/>
-                                <Button Content="Exportar Excel" Command="{Binding ExportarHistorialIndividualExcelCommand}" Style="{StaticResource ActionButtonStyle}"/>
-                                <Button Content="Exportar PDF" Command="{Binding ExportarHistorialIndividualPDFCommand}" Style="{StaticResource ActionButtonStyle}"/>
-                            </StackPanel>
-
-                            <!-- Búsqueda por Nombre -->
-                            <StackPanel Grid.Row="1" Orientation="Horizontal">
-                                <Label Content="Nombres:" VerticalAlignment="Center"/>
-                                <TextBox Text="{Binding NombresBusqueda, UpdateSourceTrigger=PropertyChanged}" Width="150" VerticalAlignment="Center" Margin="10,0"/>
-                                <Label Content="Apellidos:" VerticalAlignment="Center" Margin="20,0,0,0"/>
-                                <TextBox Text="{Binding ApellidosBusqueda, UpdateSourceTrigger=PropertyChanged}" Width="150" VerticalAlignment="Center" Margin="10,0"/>
-                                <Button Content="Consultar" Command="{Binding ConsultarHistorialPorNombreCommand}" Style="{StaticResource ActionButtonStyle}"/>
-                            </StackPanel>
-                        </Grid>
+                        <!-- Búsqueda Unificada -->
+                        <StackPanel Grid.Row="1" Orientation="Horizontal" Margin="0,0,0,15">
+                            <Label Content="Buscar por DNI, Nombre o Apellido:" VerticalAlignment="Center"/>
+                            <TextBox Text="{Binding BusquedaUnificada, UpdateSourceTrigger=PropertyChanged}" 
+                                     Width="300" 
+                                     VerticalAlignment="Center" 
+                                     Margin="10,0">
+                                <TextBox.InputBindings>
+                                    <KeyBinding Key="Return" Command="{Binding ConsultarHistorialBusquedaUnificadaCommand}"/>
+                                </TextBox.InputBindings>
+                            </TextBox>
+                            <Button Content="Consultar" Command="{Binding ConsultarHistorialBusquedaUnificadaCommand}" Style="{StaticResource ActionButtonStyle}"/>
+                            <Button Content="Exportar Excel" Command="{Binding ExportarHistorialBusquedaExcelCommand}" Style="{StaticResource ActionButtonStyle}"/>
+                            <Button Content="Exportar PDF" Command="{Binding ExportarHistorialBusquedaPDFCommand}" Style="{StaticResource ActionButtonStyle}"/>
+                            <TextBlock Text="(Acepta búsqueda sin tildes)" 
+                                       Foreground="#AAAAAA" 
+                                       FontSize="11" 
+                                       VerticalAlignment="Center" 
+                                       Margin="10,0"/>
+                        </StackPanel>
 
                         <!-- Resultados -->
                         <DataGrid Grid.Row="2"
-                                 ItemsSource="{Binding HistorialIndividual}"
+                                 ItemsSource="{Binding HistorialIndividualBusqueda}"
                                  AutoGenerateColumns="False"
                                  CanUserAddRows="False"
                                  Background="#2D2D30"
@@ -499,10 +496,13 @@
                                  IsReadOnly="True"
                                  RowStyle="{StaticResource DataGridRowStyle}">
                             <DataGrid.Columns>
-                                <DataGridTextColumn Header="Fecha" Binding="{Binding Fecha, StringFormat='dd/MM/yyyy'}" Width="120"/>
-                                <DataGridTextColumn Header="Hora Ingreso" Binding="{Binding HoraIngreso, StringFormat='hh\\:mm'}" Width="120"/>
-                                <DataGridTextColumn Header="Hora Salida" Binding="{Binding HoraSalida, StringFormat='hh\\:mm'}" Width="120"/>
-                                <DataGridCheckBoxColumn Header="Hasta Cierre" Binding="{Binding HastaCierre}" Width="120"/>
+                                <DataGridTextColumn Header="DNI" Binding="{Binding DNI}" Width="100"/>
+                                <DataGridTextColumn Header="Nombre Completo" Binding="{Binding NombreCompleto}" Width="200"/>
+                                <DataGridTextColumn Header="Categoría" Binding="{Binding Categoria}" Width="120"/>
+                                <DataGridTextColumn Header="Fecha" Binding="{Binding Fecha, StringFormat='dd/MM/yyyy'}" Width="100"/>
+                                <DataGridTextColumn Header="Hora Ingreso" Binding="{Binding HoraIngreso, StringFormat='hh\\:mm'}" Width="100"/>
+                                <DataGridTextColumn Header="Hora Salida" Binding="{Binding HoraSalida, StringFormat='hh\\:mm'}" Width="100"/>
+                                <DataGridCheckBoxColumn Header="Hasta Cierre" Binding="{Binding HastaCierre}" Width="100"/>
                                 <DataGridTextColumn Header="Observación" Binding="{Binding Observacion}" Width="*"/>
                             </DataGrid.Columns>
                             <DataGrid.ColumnHeaderStyle>
@@ -520,7 +520,7 @@
             </TabItem>
 
             <!-- TAB 3: Paneles Analíticos -->
-            <TabItem Header="📈 Paneles Analíticos">
+            <TabItem Header="Paneles Analíticos">
                 <ScrollViewer VerticalScrollBarVisibility="Auto">
                     <StackPanel Margin="10">
                         <!-- Puntualidad -->
@@ -620,6 +620,23 @@
                                         </Style>
                                     </DataGrid.ColumnHeaderStyle>
                                 </DataGrid>
+                            </Grid>
+                        </Border>
+
+                        <!-- Asistentes Temporales -->
+                        <Border Background="#CC000000" BorderBrush="#8B0000" BorderThickness="2" CornerRadius="8" Padding="15" Margin="0,0,0,15">
+                            <Grid>
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="Auto"/>
+                                </Grid.RowDefinitions>
+
+                                <TextBlock Grid.Row="0" Text="ASISTENTES TEMPORALES" FontSize="16" FontWeight="Bold" Foreground="White" Margin="0,0,0,10"/>
+
+                                <WrapPanel Grid.Row="1">
+                                    <Button Content="Exportar Excel" Command="{Binding ExportarAsistentesTemporalesExcelCommand}" Style="{StaticResource ActionButtonStyle}"/>
+                                    <Button Content="Exportar PDF" Command="{Binding ExportarAsistentesTemporalesPDFCommand}" Style="{StaticResource ActionButtonStyle}"/>
+                                </WrapPanel>
                             </Grid>
                         </Border>
 

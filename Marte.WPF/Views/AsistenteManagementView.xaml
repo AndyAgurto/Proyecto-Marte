@@ -160,11 +160,32 @@
                               Foreground="White"
                               Margin="0,0,0,15"/>
 
-                    <!-- Filtro: Mostrar solo activos -->
-                    <CheckBox Grid.Row="1"
-                              Content="Mostrar solo activos"
-                              IsChecked="{Binding MostrarSoloActivos}"
-                              Margin="0,0,0,10"/>
+                    <!-- Búsqueda y Filtros -->
+                    <StackPanel Grid.Row="1" Margin="0,0,0,10">
+                        <StackPanel Orientation="Horizontal" Margin="0,0,0,5">
+                            <Label Content="Buscar:" VerticalAlignment="Center"/>
+                            <TextBox Text="{Binding FiltroBusqueda, UpdateSourceTrigger=PropertyChanged}" 
+                                     Width="200" 
+                                     Margin="5,0"
+                                     VerticalAlignment="Center">
+                                <TextBox.InputBindings>
+                                    <KeyBinding Key="Return" Command="{Binding BuscarCommand}"/>
+                                </TextBox.InputBindings>
+                            </TextBox>
+                            <Button Content="Buscar" 
+                                    Command="{Binding BuscarCommand}" 
+                                    Style="{StaticResource ActionButtonStyle}"
+                                    MinWidth="80"
+                                    Padding="15,8"/>
+                            <Button Content="Limpiar" 
+                                    Command="{Binding LimpiarFiltroCommand}" 
+                                    Style="{StaticResource ActionButtonStyle}"
+                                    MinWidth="80"
+                                    Padding="15,8"/>
+                        </StackPanel>
+                        <CheckBox Content="Mostrar solo activos"
+                                  IsChecked="{Binding MostrarSoloActivos}"/>
+                    </StackPanel>
 
                     <!-- DataGrid de Asistentes -->
                     <DataGrid Grid.Row="2"

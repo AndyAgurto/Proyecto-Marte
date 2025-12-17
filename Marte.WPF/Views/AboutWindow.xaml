@@ -109,7 +109,7 @@
             <StackPanel>
                 <!-- Versión -->
                 <TextBlock Text="Versión" Style="{StaticResource LabelStyle}"/>
-                <TextBlock Text="1.3.0" Style="{StaticResource ValueStyle}"/>
+                <TextBlock Text="1.4.0" Style="{StaticResource ValueStyle}"/>
 
                 <!-- Fecha de Lanzamiento -->
                 <TextBlock Text="Fecha de Lanzamiento" Style="{StaticResource LabelStyle}"/>

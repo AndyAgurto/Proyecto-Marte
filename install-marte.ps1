@@ -1,7 +1,7 @@
 # ========================================
 # Instalador del Sistema MARTE
-# Version: 1.3.0
-# Fecha: Octubre 2025
+# Version: 1.4.0
+# Fecha: Diciembre 2025
 # ========================================
 
 # Cambiar al directorio del script para rutas relativas
@@ -10,9 +10,10 @@ Set-Location -Path $PSScriptRoot
 # Configuracion
 $ErrorActionPreference = "Stop"
 $AppName = "MARTE"
-$AppVersion = "1.3.0"
+$AppVersion = "1.4.0"
 $InstallPath = "C:\Program Files\$AppName"
 $DesktopPath = [Environment]::GetFolderPath("Desktop")
+$VersionFile = "$InstallPath\VERSION.txt"
 
 # Banner
 Clear-Host
@@ -21,6 +22,22 @@ Write-Host " INSTALADOR DEL SISTEMA MARTE v$AppVersion " -ForegroundColor Cyan
 Write-Host " Sistema de Gestion de Asistencias     " -ForegroundColor Cyan
 Write-Host "========================================" -ForegroundColor Cyan
 Write-Host ""
+
+# Verificar instalacion previa
+$isUpdate = $false
+if (Test-Path $InstallPath) {
+    if (Test-Path $VersionFile) {
+        $installedVersion = Get-Content $VersionFile | Select-String "Version:" | ForEach-Object { $_.Line.Split(":")[1].Trim() }
+        Write-Host "[INFO] Instalacion existente detectada: v$installedVersion" -ForegroundColor Yellow
+        Write-Host "[INFO] Se actualizara a v$AppVersion" -ForegroundColor Yellow
+        $isUpdate = $true
+    } else {
+        Write-Host "[INFO] Instalacion existente detectada (version desconocida)" -ForegroundColor Yellow
+        Write-Host "[INFO] Se actualizara a v$AppVersion" -ForegroundColor Yellow
+        $isUpdate = $true
+    }
+    Write-Host ""
+}
 
 # Verificar permisos de administrador
 if (-NOT ([Security.Principal.WindowsPrincipal][Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole([Security.Principal.WindowsBuiltInRole] "Administrator")) {
@@ -149,17 +166,34 @@ Write-Host ""
 # PASO 3: Copiar archivos de aplicacion
 # ========================================
 Write-Host "----------------------------------------" -ForegroundColor DarkGray
-Write-Host "PASO 3: Instalando archivos de $AppName..." -ForegroundColor Cyan
+if ($isUpdate) {
+    Write-Host "PASO 3: Actualizando archivos de $AppName..." -ForegroundColor Cyan
+} else {
+    Write-Host "PASO 3: Instalando archivos de $AppName..." -ForegroundColor Cyan
+}
 Write-Host "----------------------------------------" -ForegroundColor DarkGray
+
+# Preservar base de datos si existe
+$dbBackupPath = $null
+if ($isUpdate -and (Test-Path "$InstallPath\MarteDB.mdf")) {
+    Write-Host "[INFO] Respaldando base de datos existente..." -ForegroundColor Yellow
+    $dbBackupPath = "$env:TEMP\MarteDB_backup_$(Get-Date -Format 'yyyyMMdd_HHmmss')"
+    New-Item -ItemType Directory -Path $dbBackupPath -Force | Out-Null
+    Copy-Item "$InstallPath\MarteDB.mdf" "$dbBackupPath\MarteDB.mdf" -Force
+    Copy-Item "$InstallPath\MarteDB_log.ldf" "$dbBackupPath\MarteDB_log.ldf" -Force -ErrorAction SilentlyContinue
+    Write-Host "[OK] Base de datos respaldada en: $dbBackupPath" -ForegroundColor Green
+}
 
 # Crear directorio de instalacion
 if (Test-Path $InstallPath) {
-    Write-Host "[AVISO] Instalacion existente detectada en $InstallPath" -ForegroundColor Yellow
-    $overwrite = Read-Host "Desea sobrescribir la instalacion existente? (S/N)"
-    if ($overwrite -ne "S" -and $overwrite -ne "s") {
-        Write-Host "Instalacion cancelada por el usuario" -ForegroundColor Yellow
-        Read-Host "Presione ENTER para salir"
-        exit 0
+    if (-not $isUpdate) {
+        Write-Host "[AVISO] Instalacion existente detectada en $InstallPath" -ForegroundColor Yellow
+        $overwrite = Read-Host "Desea sobrescribir la instalacion existente? (S/N)"
+        if ($overwrite -ne "S" -and $overwrite -ne "s") {
+            Write-Host "Instalacion cancelada por el usuario" -ForegroundColor Yellow
+            Read-Host "Presione ENTER para salir"
+            exit 0
+        }
     }
 }
 
@@ -184,6 +218,15 @@ if (Test-Path ".\Archivos") {
 Write-Host "Copiando archivos desde $sourcePath..." -ForegroundColor Cyan
 Copy-Item -Path "$sourcePath\*" -Destination $InstallPath -Recurse -Force
 Write-Host "[OK] Archivos copiados correctamente" -ForegroundColor Green
+
+# Restaurar base de datos si fue respaldada
+if ($dbBackupPath) {
+    Write-Host "[INFO] Restaurando base de datos..." -ForegroundColor Yellow
+    Copy-Item "$dbBackupPath\MarteDB.mdf" "$InstallPath\MarteDB.mdf" -Force
+    Copy-Item "$dbBackupPath\MarteDB_log.ldf" "$InstallPath\MarteDB_log.ldf" -Force -ErrorAction SilentlyContinue
+    Write-Host "[OK] Base de datos restaurada" -ForegroundColor Green
+    Write-Host "[INFO] Backup conservado en: $dbBackupPath" -ForegroundColor Cyan
+}
 
 Write-Host ""
 
@@ -229,22 +272,36 @@ Write-Host ""
 # RESUMEN DE INSTALACION
 # ========================================
 Write-Host "========================================" -ForegroundColor Green
-Write-Host " INSTALACION COMPLETADA EXITOSAMENTE   " -ForegroundColor Green
+if ($isUpdate) {
+    Write-Host " ACTUALIZACION COMPLETADA EXITOSAMENTE " -ForegroundColor Green
+} else {
+    Write-Host " INSTALACION COMPLETADA EXITOSAMENTE   " -ForegroundColor Green
+}
 Write-Host "========================================" -ForegroundColor Green
 Write-Host ""
+Write-Host "Version instalada: v$AppVersion" -ForegroundColor Cyan
 Write-Host "Ubicacion de instalacion:" -ForegroundColor Cyan
 Write-Host "  $InstallPath" -ForegroundColor White
 Write-Host ""
-Write-Host "Credenciales de acceso predeterminadas:" -ForegroundColor Cyan
-Write-Host "  Usuario:    druagurto" -ForegroundColor White
-Write-Host "  Contrasena: @Druagurto00" -ForegroundColor White
-Write-Host ""
-Write-Host "[IMPORTANTE] Cambie la contrasena despues del primer inicio de sesion" -ForegroundColor Yellow
-Write-Host ""
-Write-Host "Base de datos:" -ForegroundColor Cyan
-Write-Host "  Se creara automaticamente en la primera ejecucion" -ForegroundColor White
-Write-Host "  Ubicacion: %LocalAppData%\MARTE\Data\MarteDb.mdf" -ForegroundColor White
-Write-Host ""
+if ($isUpdate) {
+    Write-Host "Cambios en v$AppVersion" -ForegroundColor Cyan
+    Write-Host "  - Reporte Jerarquico con detalle completo por asistente" -ForegroundColor White
+    Write-Host "  - Exportacion PDF unificada con estilo consistente" -ForegroundColor White
+    Write-Host "  - Optimizacion de codigo y rendimiento" -ForegroundColor White
+    Write-Host "  - Base de datos preservada durante actualizacion" -ForegroundColor White
+    Write-Host ""
+} else {
+    Write-Host "Credenciales de acceso predeterminadas:" -ForegroundColor Cyan
+    Write-Host "  Usuario:    druagurto" -ForegroundColor White
+    Write-Host "  Contrasena: @Druagurto00" -ForegroundColor White
+    Write-Host ""
+    Write-Host "[IMPORTANTE] Cambie la contrasena despues del primer inicio de sesion" -ForegroundColor Yellow
+    Write-Host ""
+    Write-Host "Base de datos:" -ForegroundColor Cyan
+    Write-Host "  Se creara automaticamente en la primera ejecucion" -ForegroundColor White
+    Write-Host "  Ubicacion: %LocalAppData%\MARTE\Data\MarteDb.mdf" -ForegroundColor White
+    Write-Host ""
+}
 Write-Host "Para ejecutar MARTE:" -ForegroundColor Cyan
 Write-Host "  - Haga doble clic en el icono del escritorio" -ForegroundColor White
 Write-Host "  - O busquelo en el menu inicio" -ForegroundColor White

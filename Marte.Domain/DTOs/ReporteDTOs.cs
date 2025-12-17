@@ -104,4 +104,28 @@ namespace Marte.Domain.DTOs
         public double PorcentajeAsistencia { get; set; }
         public List<string> NombresAsistentes { get; set; } = new();
     }
+
+    // DTO para búsqueda unificada en historial individual
+    public class ReporteHistorialIndividualBusqueda
+    {
+        public string DNI { get; set; } = string.Empty;
+        public string NombreCompleto { get; set; } = string.Empty;
+        public string Categoria { get; set; } = string.Empty;
+        public DateTime Fecha { get; set; }
+        public TimeSpan HoraIngreso { get; set; }
+        public TimeSpan? HoraSalida { get; set; }
+        public bool HastaCierre { get; set; }
+        public string? Observacion { get; set; }
+    }
+
+    // DTO para reporte jerárquico por categoría
+    public class ReporteCategoriaJerarquico
+    {
+        public int Orden { get; set; }
+        public string CategoriaJerarquica { get; set; } = string.Empty;
+        public string? GrupoAgrupacion { get; set; } // "Fuerzas Vivas" para G de S, GG.FF, GG.MM
+        public int TotalAsistencias { get; set; }
+        public int TotalHastaCierre { get; set; }
+        public double PorcentajeCierre { get; set; }
+    }
 }

@@ -9,6 +9,23 @@ using Marte.Domain.Entities;
 using Marte.Application.Services;
 using Marte.Infrastructure.Repositories;
 
+// Helper method to create AsistenciaService with all dependencies
+namespace Marte.Tests
+{
+    internal static class TestHelpers
+    {
+        public static AsistenciaService CreateAsistenciaService(MarteDbContext context)
+        {
+            var asistenciaRepo = new AsistenciaRepository(context);
+            var asistenteRepo = new AsistenteRepository(context);
+            var configuracionRepo = new ConfiguracionEscuelaRepository(context);
+            var auditRepo = new AuditLogRepository(context);
+            var categoriaRepo = new CategoriaRepository(context);
+            return new AsistenciaService(asistenciaRepo, asistenteRepo, auditRepo, configuracionRepo, categoriaRepo);
+        }
+    }
+}
+
 namespace Marte.Tests
 {
     public class AsistenciaControlTests : IDisposable
@@ -68,11 +85,7 @@ namespace Marte.Tests
         {
             // Arrange
             using var context = new MarteDbContext(_options);
-            var asistenciaRepo = new AsistenciaRepository(context);
-            var asistenteRepo = new AsistenteRepository(context);
-            var configuracionRepo = new ConfiguracionEscuelaRepository(context);
-            var auditRepo = new AuditLogRepository(context);
-            var service = new AsistenciaService(asistenciaRepo, asistenteRepo, auditRepo, configuracionRepo);
+            var service = TestHelpers.CreateAsistenciaService(context);
 
             // Act
             var result = await service.RegistrarIngresoAsync(_asistenteTest.DNI, "testuser");
@@ -89,11 +102,7 @@ namespace Marte.Tests
         {
             // Arrange
             using var context = new MarteDbContext(_options);
-            var asistenciaRepo = new AsistenciaRepository(context);
-            var asistenteRepo = new AsistenteRepository(context);
-            var configuracionRepo = new ConfiguracionEscuelaRepository(context);
-            var auditRepo = new AuditLogRepository(context);
-            var service = new AsistenciaService(asistenciaRepo, asistenteRepo, auditRepo, configuracionRepo);
+            var service = TestHelpers.CreateAsistenciaService(context);
 
             // Act
             var result = await service.RegistrarIngresoAsync("99999999", "testuser");
@@ -108,11 +117,7 @@ namespace Marte.Tests
         {
             // Arrange
             using var context = new MarteDbContext(_options);
-            var asistenciaRepo = new AsistenciaRepository(context);
-            var asistenteRepo = new AsistenteRepository(context);
-            var configuracionRepo = new ConfiguracionEscuelaRepository(context);
-            var auditRepo = new AuditLogRepository(context);
-            var service = new AsistenciaService(asistenciaRepo, asistenteRepo, auditRepo, configuracionRepo);
+            var service = TestHelpers.CreateAsistenciaService(context);
 
             await service.RegistrarIngresoAsync(_asistenteTest.DNI, "testuser");
 
@@ -129,11 +134,7 @@ namespace Marte.Tests
         {
             // Arrange
             using var context = new MarteDbContext(_options);
-            var asistenciaRepo = new AsistenciaRepository(context);
-            var asistenteRepo = new AsistenteRepository(context);
-            var configuracionRepo = new ConfiguracionEscuelaRepository(context);
-            var auditRepo = new AuditLogRepository(context);
-            var service = new AsistenciaService(asistenciaRepo, asistenteRepo, auditRepo, configuracionRepo);
+            var service = TestHelpers.CreateAsistenciaService(context);
 
             await service.RegistrarIngresoAsync(_asistenteTest.DNI, "testuser");
             var asistencias = await context.Asistencias.ToListAsync();
@@ -153,11 +154,7 @@ namespace Marte.Tests
         {
             // Arrange
             using var context = new MarteDbContext(_options);
-            var asistenciaRepo = new AsistenciaRepository(context);
-            var asistenteRepo = new AsistenteRepository(context);
-            var configuracionRepo = new ConfiguracionEscuelaRepository(context);
-            var auditRepo = new AuditLogRepository(context);
-            var service = new AsistenciaService(asistenciaRepo, asistenteRepo, auditRepo, configuracionRepo);
+            var service = TestHelpers.CreateAsistenciaService(context);
 
             await service.RegistrarIngresoAsync(_asistenteTest.DNI, "testuser");
             var asistencias = await context.Asistencias.ToListAsync();
@@ -177,11 +174,7 @@ namespace Marte.Tests
         {
             // Arrange
             using var context = new MarteDbContext(_options);
-            var asistenciaRepo = new AsistenciaRepository(context);
-            var asistenteRepo = new AsistenteRepository(context);
-            var configuracionRepo = new ConfiguracionEscuelaRepository(context);
-            var auditRepo = new AuditLogRepository(context);
-            var service = new AsistenciaService(asistenciaRepo, asistenteRepo, auditRepo, configuracionRepo);
+            var service = TestHelpers.CreateAsistenciaService(context);
 
             // Crear 2 asistentes más
             var asistente2 = new Asistente
@@ -216,11 +209,7 @@ namespace Marte.Tests
         {
             // Arrange
             using var context = new MarteDbContext(_options);
-            var asistenciaRepo = new AsistenciaRepository(context);
-            var asistenteRepo = new AsistenteRepository(context);
-            var configuracionRepo = new ConfiguracionEscuelaRepository(context);
-            var auditRepo = new AuditLogRepository(context);
-            var service = new AsistenciaService(asistenciaRepo, asistenteRepo, auditRepo, configuracionRepo);
+            var service = TestHelpers.CreateAsistenciaService(context);
 
             await service.RegistrarIngresoAsync(_asistenteTest.DNI, "testuser");
 
@@ -237,11 +226,7 @@ namespace Marte.Tests
         {
             // Arrange
             using var context = new MarteDbContext(_options);
-            var asistenciaRepo = new AsistenciaRepository(context);
-            var asistenteRepo = new AsistenteRepository(context);
-            var configuracionRepo = new ConfiguracionEscuelaRepository(context);
-            var auditRepo = new AuditLogRepository(context);
-            var service = new AsistenciaService(asistenciaRepo, asistenteRepo, auditRepo, configuracionRepo);
+            var service = TestHelpers.CreateAsistenciaService(context);
 
             await service.RegistrarIngresoAsync(_asistenteTest.DNI, "testuser");
             var hoy = DateTime.Today;
@@ -259,11 +244,7 @@ namespace Marte.Tests
         {
             // Arrange
             using var context = new MarteDbContext(_options);
-            var asistenciaRepo = new AsistenciaRepository(context);
-            var asistenteRepo = new AsistenteRepository(context);
-            var configuracionRepo = new ConfiguracionEscuelaRepository(context);
-            var auditRepo = new AuditLogRepository(context);
-            var service = new AsistenciaService(asistenciaRepo, asistenteRepo, auditRepo, configuracionRepo);
+            var service = TestHelpers.CreateAsistenciaService(context);
 
             // Act
             await service.RegistrarIngresoAsync(_asistenteTest.DNI, "testuser");
@@ -278,11 +259,7 @@ namespace Marte.Tests
         {
             // Arrange
             using var context = new MarteDbContext(_options);
-            var asistenciaRepo = new AsistenciaRepository(context);
-            var asistenteRepo = new AsistenteRepository(context);
-            var configuracionRepo = new ConfiguracionEscuelaRepository(context);
-            var auditRepo = new AuditLogRepository(context);
-            var service = new AsistenciaService(asistenciaRepo, asistenteRepo, auditRepo, configuracionRepo);
+            var service = TestHelpers.CreateAsistenciaService(context);
 
             await service.RegistrarIngresoAsync(_asistenteTest.DNI, "testuser");
 
@@ -298,11 +275,7 @@ namespace Marte.Tests
         {
             // Arrange
             using var context = new MarteDbContext(_options);
-            var asistenciaRepo = new AsistenciaRepository(context);
-            var asistenteRepo = new AsistenteRepository(context);
-            var configuracionRepo = new ConfiguracionEscuelaRepository(context);
-            var auditRepo = new AuditLogRepository(context);
-            var service = new AsistenciaService(asistenciaRepo, asistenteRepo, auditRepo, configuracionRepo);
+            var service = TestHelpers.CreateAsistenciaService(context);
 
             // Inactivar asistente
             _asistenteTest.Estado = false;

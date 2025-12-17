@@ -148,26 +148,32 @@
                             <ColumnDefinition Width="Auto"/>
                             <ColumnDefinition Width="300"/>
                             <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition Width="Auto"/>
                             <ColumnDefinition Width="*"/>
                         </Grid.ColumnDefinitions>
 
-                        <Label Grid.Column="0" Content="DNI/Código:" VerticalAlignment="Center" Margin="0,0,10,0"/>
+                        <Label Grid.Column="0" Content="DNI/Código/Nombre:" VerticalAlignment="Center" Margin="0,0,10,0"/>
                         <TextBox Grid.Column="1" 
                                  Text="{Binding DNIBusqueda, UpdateSourceTrigger=PropertyChanged}"
                                  VerticalAlignment="Center"
-                                 Margin="0,0,20,0">
+                                 Margin="0,0,10,0">
                             <TextBox.InputBindings>
-                                <KeyBinding Key="Return" Command="{Binding RegistrarIngresoCommand}"/>
+                                <KeyBinding Key="Return" Command="{Binding RegistrarIngresoDinamicoCommand}"/>
                             </TextBox.InputBindings>
                         </TextBox>
                         
                         <Button Grid.Column="2"
-                                Content="Registrar Ingreso"
-                                Command="{Binding RegistrarIngresoCommand}"
+                                Content="Registro Rápido"
+                                Command="{Binding RegistrarIngresoDinamicoCommand}"
                                 Style="{StaticResource ActionButtonStyle}"/>
 
-                        <TextBlock Grid.Column="3"
-                                   Text="Presione ENTER o haga clic en el botón para registrar"
+                        <Button Grid.Column="3"
+                                Content="Visitante Temporal"
+                                Command="{Binding RegistrarIngresoTemporalCommand}"
+                                Style="{StaticResource ActionButtonStyle}"/>
+
+                        <TextBlock Grid.Column="4"
+                                   Text="Presione ENTER para registro rápido"
                                    FontSize="11"
                                    Foreground="#AAAAAA"
                                    VerticalAlignment="Center"
@@ -298,6 +304,7 @@
                     <Grid>
                         <Grid.RowDefinitions>
                             <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
                             <RowDefinition Height="*"/>
                         </Grid.RowDefinitions>
 
@@ -308,10 +315,28 @@
                                   FontSize="16" 
                                   FontWeight="Bold" 
                                   Foreground="White"
-                                  Margin="0,0,0,15"/>
+                                  Margin="0,0,0,10"/>
+
+                        <!-- Búsqueda en tabla -->
+                        <StackPanel Grid.Row="1" Orientation="Horizontal" Margin="0,0,0,10">
+                            <Label Content="Buscar en tabla:" VerticalAlignment="Center"/>
+                            <TextBox Text="{Binding BusquedaAsistencia, UpdateSourceTrigger=PropertyChanged}" 
+                                     Width="200" 
+                                     Margin="5,0"
+                                     VerticalAlignment="Center">
+                                <TextBox.InputBindings>
+                                    <KeyBinding Key="Return" Command="{Binding BuscarAsistenciaCommand}"/>
+                                </TextBox.InputBindings>
+                            </TextBox>
+                            <Button Content="Buscar" 
+                                    Command="{Binding BuscarAsistenciaCommand}"
+                                    Style="{StaticResource ActionButtonStyle}"
+                                    MinWidth="80"
+                                    Padding="15,8"/>
+                        </StackPanel>
 
                         <!-- DataGrid de Historial -->
-                        <DataGrid Grid.Row="1"
+                        <DataGrid Grid.Row="2"
                                  ItemsSource="{Binding HistorialDia}"
                                  AutoGenerateColumns="False"
                                  CanUserAddRows="False"
