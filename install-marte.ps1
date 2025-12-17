@@ -309,4 +309,14 @@ Write-Host ""
 Write-Host "----------------------------------------" -ForegroundColor DarkGray
 Write-Host ""
 
-Read-Host "Presione ENTER para finalizar"
+# Preguntar si desea abrir la aplicación
+$openApp = Read-Host "¿Desea abrir MARTE ahora? (S/N)"
+if ($openApp -eq "S" -or $openApp -eq "s" -or $openApp -eq "") {
+    Write-Host ""
+    Write-Host "[INFO] Abriendo MARTE..." -ForegroundColor Cyan
+    Start-Process -FilePath "$InstallPath\Marte.WPF.exe"
+    Start-Sleep -Seconds 2
+} else {
+    Write-Host ""
+    Write-Host "[INFO] Puede abrir MARTE desde el icono del escritorio o menu inicio" -ForegroundColor Cyan
+}
